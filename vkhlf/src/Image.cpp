@@ -36,9 +36,6 @@
 #include <vkhlf/PhysicalDevice.h>
 #include <vkhlf/Queue.h>
 
-#include <D:\git\vulkan\src\spec\vulkan_ext.h>
-//#include <D:\git\vulkan\src\spec\vulkan_ext.c>
-
 namespace vkhlf
 {
 

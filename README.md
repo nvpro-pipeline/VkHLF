@@ -2,9 +2,9 @@
 
 VkHLF is an experimental high level abstraction library on top of Vulkan. It adds features like transparent suballocation,
 resource tracking on the CPU & GPU and simplified resource creation while staying as close as possible to the original
-Vulkan API. In contrast to Vulkan-Hpp, which was carefully designed not to introduce any additional cost, this library 
-*can* add a signifact cost depending on the usage pattern. Though, when used properly, it is possible
-to use this library with minimal additional cost while improper use can result in OpenGL performance levels.
+Vulkan API. In contrast to Vulkan-Hpp, which was carefully designed to be a zero-overhead C++ abstraction for Vulkan, this 
+library adds significant higher-level functionality. Even so, it has been designed for high-performance, but it can cost
+performance relative to native Vulkan if not employed with the intended usage patterns. 
 
 Since this project is in its early stages and under heavy development expect bugs and interface changes for a while. It should
 not be used for production code yet!

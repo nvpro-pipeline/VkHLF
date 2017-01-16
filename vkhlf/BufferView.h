@@ -43,8 +43,8 @@ namespace vkhlf
 
       VKHLF_API  operator vk::BufferView() const;
 
-      VKHLF_API BufferView(BufferView const& rhs) = delete;
-      VKHLF_API BufferView & operator=(BufferView const& rhs) = delete;
+      BufferView(BufferView const& rhs) = delete;
+      BufferView & operator=(BufferView const& rhs) = delete;
 
     private:
       vk::BufferView  m_bufferView;

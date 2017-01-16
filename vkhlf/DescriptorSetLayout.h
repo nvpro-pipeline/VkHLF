@@ -56,8 +56,8 @@ namespace vkhlf
 
       VKHLF_API operator vk::DescriptorSetLayout() const;
 
-      VKHLF_API DescriptorSetLayout(DescriptorSetLayout const& rhs) = delete;
-      VKHLF_API DescriptorSetLayout & operator=(DescriptorSetLayout const& rhs) = delete;
+      DescriptorSetLayout(DescriptorSetLayout const& rhs) = delete;
+      DescriptorSetLayout & operator=(DescriptorSetLayout const& rhs) = delete;
 
     private:
       std::vector<DescriptorSetLayoutBinding> m_bindings;

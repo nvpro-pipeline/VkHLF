@@ -42,8 +42,8 @@ namespace vkhlf
 
       VKHLF_API std::shared_ptr<DeviceMemory> allocate(vk::DeviceSize allocationSize, uint32_t memoryTypeIndex);
 
-      VKHLF_API DeviceMemoryAllocator(DeviceMemoryAllocator const& rhs) = delete;
-      VKHLF_API DeviceMemoryAllocator & operator=(DeviceMemoryAllocator const& rhs) = delete;
+      DeviceMemoryAllocator(DeviceMemoryAllocator const& rhs) = delete;
+      DeviceMemoryAllocator & operator=(DeviceMemoryAllocator const& rhs) = delete;
 
     private:
       struct ChunkData

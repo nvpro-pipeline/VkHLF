@@ -54,8 +54,8 @@ namespace vkhlf
 
       VKHLF_API operator vk::DisplayKHR() const;
 
-      VKHLF_API Display(Display const& rhs) = delete;
-      VKHLF_API Display & operator=(Display const& rhs) = delete;
+      Display(Display const& rhs) = delete;
+      Display & operator=(Display const& rhs) = delete;
 
     private:
       vk::DisplayKHR  m_display;

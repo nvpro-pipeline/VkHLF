@@ -46,8 +46,8 @@ namespace vkhlf
 
       VKHLF_API operator vk::DescriptorPool() const;
 
-      VKHLF_API DescriptorPool(DescriptorPool const& rhs) = delete;
-      VKHLF_API DescriptorPool & operator=(DescriptorPool const& rhs) = delete;
+      DescriptorPool(DescriptorPool const& rhs) = delete;
+      DescriptorPool & operator=(DescriptorPool const& rhs) = delete;
 
     private:
       vk::DescriptorPool  m_descriptorPool;

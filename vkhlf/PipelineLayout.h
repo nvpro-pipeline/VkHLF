@@ -44,8 +44,8 @@ namespace vkhlf
 
       VKHLF_API operator vk::PipelineLayout() const;
 
-      VKHLF_API PipelineLayout(PipelineLayout const& rhs) = delete;
-      VKHLF_API PipelineLayout & operator=(PipelineLayout const& rhs) = delete;
+      PipelineLayout(PipelineLayout const& rhs) = delete;
+      PipelineLayout & operator=(PipelineLayout const& rhs) = delete;
 
     private:
       vk::PipelineLayout                                m_pipelineLayout;

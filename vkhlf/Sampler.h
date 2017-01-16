@@ -44,8 +44,8 @@ namespace vkhlf
 
       VKHLF_API operator vk::Sampler() const;
 
-      VKHLF_API Sampler(Sampler const& rhs) = delete;
-      VKHLF_API Sampler & operator=(Sampler const& rhs) = delete;
+      Sampler(Sampler const& rhs) = delete;
+      Sampler & operator=(Sampler const& rhs) = delete;
 
     private:
       vk::Sampler m_sampler;

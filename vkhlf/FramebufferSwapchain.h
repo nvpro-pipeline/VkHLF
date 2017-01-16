@@ -50,7 +50,7 @@ namespace vkhlf {
         std::shared_ptr<Framebuffer> const& getFramebuffer() const { return m_framebuffers[m_swapchainIndex]; }
 
         std::shared_ptr<Image> const&       getColorImage() const { return m_colorImages[m_swapchainIndex]; }
-        std::shared_ptr<ImageView> const&   getColorImageView() const { m_colorViews[m_swapchainIndex]; }
+        std::shared_ptr<ImageView> const&   getColorImageView() const { return m_colorViews[m_swapchainIndex]; }
 
         std::shared_ptr<Image> const&       getDepthImage() const { return m_depthImage; }
         std::shared_ptr<ImageView> const&   getDepthView() const { return m_depthView; }

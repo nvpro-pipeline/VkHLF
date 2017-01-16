@@ -161,8 +161,8 @@ namespace vkhlf
 
       VKHLF_API operator vk::Device() const;
 
-      VKHLF_API Device(Device const& rhs) = delete;
-      VKHLF_API Device & operator=(Device const& rhs) = delete;
+      Device(Device const& rhs) = delete;
+      Device & operator=(Device const& rhs) = delete;
 
     private:
       vk::Device                                      m_device;

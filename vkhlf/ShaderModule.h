@@ -45,8 +45,8 @@ namespace vkhlf
 
       VKHLF_API operator vk::ShaderModule() const;
 
-      VKHLF_API ShaderModule(ShaderModule const& rhs) = delete;
-      VKHLF_API ShaderModule & operator=(ShaderModule const& rhs) = delete;
+      ShaderModule(ShaderModule const& rhs) = delete;
+      ShaderModule & operator=(ShaderModule const& rhs) = delete;
 
     private:
       vk::ShaderModule m_shaderModule;

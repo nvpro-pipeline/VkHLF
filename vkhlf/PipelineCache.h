@@ -46,8 +46,8 @@ namespace vkhlf
 
       VKHLF_API operator vk::PipelineCache() const;
 
-      VKHLF_API PipelineCache(PipelineCache const& rhs) = delete;
-      VKHLF_API PipelineCache & operator=(PipelineCache const& rhs) = delete;
+      PipelineCache(PipelineCache const& rhs) = delete;
+      PipelineCache & operator=(PipelineCache const& rhs) = delete;
 
     private:
       vk::PipelineCache m_pipelineCache;

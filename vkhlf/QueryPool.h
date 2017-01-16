@@ -50,8 +50,8 @@ namespace vkhlf
       VKHLF_API vk::QueryType getQueryType() const;
 #endif
 
-      VKHLF_API QueryPool(QueryPool const& rhs) = delete;
-      VKHLF_API QueryPool & operator=(QueryPool const& rhs) = delete;
+      QueryPool(QueryPool const& rhs) = delete;
+      QueryPool & operator=(QueryPool const& rhs) = delete;
 
     private:
       uint32_t      m_queryCount;

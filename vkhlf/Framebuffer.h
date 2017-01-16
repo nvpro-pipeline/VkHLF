@@ -47,8 +47,8 @@ namespace vkhlf
 
       VKHLF_API operator vk::Framebuffer () const;
 
-      VKHLF_API Framebuffer(Framebuffer const& rhs) = delete;
-      VKHLF_API Framebuffer & operator=(Framebuffer const& rhs) = delete;
+      Framebuffer(Framebuffer const& rhs) = delete;
+      Framebuffer & operator=(Framebuffer const& rhs) = delete;
 
     private:
       vk::Framebuffer                              m_framebuffer;

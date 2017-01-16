@@ -51,8 +51,8 @@ namespace vkhlf
 
       VKHLF_API operator vk::Buffer() const;
 
-      VKHLF_API Buffer(Buffer const& rhs) = delete;
-      VKHLF_API Buffer & operator=(Buffer const& rhs) = delete;
+      Buffer(Buffer const& rhs) = delete;
+      Buffer & operator=(Buffer const& rhs) = delete;
 
     private:
       vk::Buffer              m_buffer;

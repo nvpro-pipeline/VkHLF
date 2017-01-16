@@ -101,8 +101,8 @@ namespace vkhlf
 
       VKHLF_API operator vk::DescriptorSet() const;
 
-      VKHLF_API DescriptorSet(DescriptorSet const& rhs) = delete;
-      VKHLF_API DescriptorSet & operator=(DescriptorSet const& rhs) = delete;
+      DescriptorSet(DescriptorSet const& rhs) = delete;
+      DescriptorSet & operator=(DescriptorSet const& rhs) = delete;
 
     private:
       vk::DescriptorSet m_descriptorSet;

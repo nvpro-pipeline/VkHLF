@@ -37,9 +37,27 @@ namespace vkhlf
   class Reference
   {};
 
+  template<class U, typename T, typename...Ts>
+  class ReferenceInternal
+  {
+  public:
+    static std::shared_ptr<U> const& get(Reference<T, Ts...> const& ref) { return ref.m_tail.template get<U>(); }
+    static void set(Reference<T, Ts...>& ref, std::shared_ptr<U> const& ptr) { ref.m_tail.template set<U>(ptr); }
+  };
+  template <typename T, typename...Ts>
+  class ReferenceInternal<T, T, Ts...>
+  {
+  public:
+    static std::shared_ptr<T> const& get(Reference<T, Ts...> const& ref) { return ref.m_head; }
+    static void set(Reference<T, Ts...>& ref, std::shared_ptr<T> const& ptr) { ref.m_head = ptr; }
+  };
+
   template<typename T, typename... Ts>
   class Reference<T, Ts...>
   {
+    template <class U, typename X, typename...Xs>
+    friend class ReferenceInternal;
+
     public:
       Reference(std::shared_ptr<T> const& t, std::shared_ptr<Ts>... ts)
         : m_head(t)
@@ -47,15 +65,11 @@ namespace vkhlf
       {}
 
       template<class U>
-      std::shared_ptr<U> const& get() const { return m_tail.get<U>(); };
-
-      template<>
-      std::shared_ptr<T> const& get() const { return m_head; };
+      std::shared_ptr<U> const& get() const { return ReferenceInternal<U, T, Ts...>::get(*this); };
 
     protected:
-      friend class Reference;
-      template <class U> void set(std::shared_ptr<U> const& ptr) { m_tail.set<U>(ptr); }
-      template <>        void set(std::shared_ptr<T> const& ptr) { m_head = ptr; }
+      template <class U>
+      void set(std::shared_ptr<U> const& ptr) { ReferenceInternal<U, T, Ts...>::set(*this, ptr); }
 
     private:
       std::shared_ptr<T>  m_head;

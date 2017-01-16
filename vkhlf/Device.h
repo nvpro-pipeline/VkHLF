@@ -53,8 +53,13 @@ namespace vkhlf
   class Device : public Reference<PhysicalDevice, Allocator>, public std::enable_shared_from_this<Device>
   {
     public:
-      VKHLF_API Device(std::shared_ptr<PhysicalDevice> const& physicalDevice, vk::ArrayProxy<const DeviceQueueCreateInfo> queueCreateInfos, vk::ArrayProxy<const std::string> enabledLayerNames,
-                    vk::ArrayProxy<const std::string> enabledExtensionNames, vk::PhysicalDeviceFeatures const& enabledFeatures, std::shared_ptr<Allocator> const& allocator);
+      VKHLF_API static std::shared_ptr<Device> create(std::shared_ptr<PhysicalDevice> const& physicalDevice,
+                                                      vk::ArrayProxy<const DeviceQueueCreateInfo> queueCreateInfos,
+                                                      vk::ArrayProxy<const std::string> enabledLayerNames,
+                                                      vk::ArrayProxy<const std::string> enabledExtensionNames,
+                                                      vk::PhysicalDeviceFeatures const& enabledFeatures,
+                                                      std::shared_ptr<Allocator> const& allocator);
+
       VKHLF_API virtual ~Device();
 
       // allocate DeviceMemory
@@ -164,9 +169,15 @@ namespace vkhlf
       Device(Device const& rhs) = delete;
       Device & operator=(Device const& rhs) = delete;
 
+    protected:
+      VKHLF_API Device(std::shared_ptr<PhysicalDevice> const& physicalDevice, std::shared_ptr<Allocator> const& allocator);
+
     private:
-      vk::Device                                      m_device;
-      std::vector<std::vector<std::weak_ptr<Queue>>>  m_queues;
+      VKHLF_API void init(vk::ArrayProxy<const vkhlf::DeviceQueueCreateInfo> queueCreateInfos, vk::ArrayProxy<const std::string> enabledLayerNames,
+                          vk::ArrayProxy<const std::string> enabledExtensionNames, vk::PhysicalDeviceFeatures const& enabledFeatures);
+
+      vk::Device                                                     m_device;
+      std::map<uint32_t, std::vector<std::unique_ptr<vkhlf::Queue>>> m_queues; // key is queueFamilyIndex
   };
 
   class FramebufferData

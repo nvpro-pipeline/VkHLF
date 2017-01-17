@@ -71,10 +71,10 @@ namespace vkhlf
     {
       std::vector<std::string> eln(enabledLayerNames.begin(), enabledLayerNames.end());
       eln.push_back("VK_LAYER_LUNARG_standard_validation");
-      return std::make_shared<Device>(shared_from_this(), queueCreateInfos, eln, enabledExtensionNames, enabledFeatures, allocator);
+      return Device::create(shared_from_this(), queueCreateInfos, eln, enabledExtensionNames, enabledFeatures, allocator);
     }
 #endif
-    return std::make_shared<Device>(shared_from_this(), queueCreateInfos, enabledLayerNames, enabledExtensionNames, enabledFeatures, allocator);
+    return Device::create(shared_from_this(), queueCreateInfos, enabledLayerNames, enabledExtensionNames, enabledFeatures, allocator);
   }
 
   std::vector<DisplayPlaneProperties> PhysicalDevice::getDisplayPlaneProperties()

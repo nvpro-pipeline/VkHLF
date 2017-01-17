@@ -121,10 +121,9 @@ namespace vkhlf
     std::vector<std::shared_ptr<Semaphore>>     signalSemaphores;
   };
 
-  class Queue : public Reference<Device>
+  class Queue
   {
     public:
-      VKHLF_API Queue(std::shared_ptr<vkhlf::Device> const& device, uint32_t queueFamilyIndex, uint32_t queueIndex);
       VKHLF_API virtual ~Queue();
 
       VKHLF_API void bindSparse(vk::ArrayProxy<const BindSparseInfo> bindInfos, std::shared_ptr<Fence> const& fence);
@@ -138,20 +137,24 @@ namespace vkhlf
 
       VKHLF_API operator vk::Queue() const;
 
-      Queue(Queue const& rhs) = delete;
-      Queue & operator=(Queue const& rhs) = delete;
+      VKHLF_API std::shared_ptr<Device> getDevice() { return m_device.lock(); }
+
+      VKHLF_API Queue(Queue const& rhs) = delete;
+      VKHLF_API Queue & operator=(Queue const& rhs) = delete;
+
+    protected:
+      friend class Device;
+      VKHLF_API Queue(std::shared_ptr<vkhlf::Device> const& device, vk::Queue queue);
 
     private:
       VKHLF_API void releaseResources();
 
     private:
+      // Devices and Queues have a shared refcount, thus it's safe to assume that the weak_ptr is always valid.
+      std::weak_ptr<vkhlf::Device>                                  m_device;
       vk::Queue                                                     m_queue;
       std::map<std::shared_ptr<Fence>, std::vector<SubmitInfo>>     m_submitInfos;
       std::map<std::shared_ptr<Fence>, std::vector<BindSparseInfo>> m_bindSparseInfos;
-
-#if !defined(NDEBUG)
-      uint32_t  m_familyIndex;
-#endif
   };
 
   VKHLF_API void submitAndWait(std::shared_ptr<Queue> const& queue, std::shared_ptr<CommandBuffer> const& commandBuffer, std::shared_ptr<Allocator> const& fenceAllocator = nullptr);

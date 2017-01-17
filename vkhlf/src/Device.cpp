@@ -67,9 +67,23 @@ namespace vkhlf
     return *this;
   }
 
-  Device::Device(std::shared_ptr<PhysicalDevice> const& physicalDevice, vk::ArrayProxy<const vkhlf::DeviceQueueCreateInfo> queueCreateInfos, vk::ArrayProxy<const std::string> enabledLayerNames,
-                 vk::ArrayProxy<const std::string> enabledExtensionNames, vk::PhysicalDeviceFeatures const& enabledFeatures, std::shared_ptr<Allocator> const& allocator)
+  std::shared_ptr<Device> Device::create(std::shared_ptr<PhysicalDevice> const& physicalDevice, vk::ArrayProxy<const DeviceQueueCreateInfo> queueCreateInfos,
+    vk::ArrayProxy<const std::string> enabledLayerNames, vk::ArrayProxy<const std::string> enabledExtensionNames,
+    vk::PhysicalDeviceFeatures const& enabledFeatures, std::shared_ptr<Allocator> const& allocator)
+  {
+    std::shared_ptr<Device> device(new Device(physicalDevice, allocator));
+    device->init(queueCreateInfos, enabledLayerNames, enabledExtensionNames, enabledFeatures);
+    return device;
+  }
+
+  Device::Device(std::shared_ptr<PhysicalDevice> const& physicalDevice, std::shared_ptr<Allocator> const& allocator)
     : Reference(physicalDevice, allocator)
+  {
+
+  }
+
+  void Device::init(vk::ArrayProxy<const vkhlf::DeviceQueueCreateInfo> queueCreateInfos, vk::ArrayProxy<const std::string> enabledLayerNames,
+                    vk::ArrayProxy<const std::string> enabledExtensionNames, vk::PhysicalDeviceFeatures const& enabledFeatures)
   {
 #if !defined(NDEBUG)
     std::vector<vk::QueueFamilyProperties> queueFamilyProperties = get<PhysicalDevice>()->getQueueFamilyProperties();
@@ -98,13 +112,19 @@ namespace vkhlf
     }
 
     vk::DeviceCreateInfo createInfo({}, vkhlf::checked_cast<uint32_t>(queueCIs.size()), queueCIs.data(), vkhlf::checked_cast<uint32_t>(layers.size()), layers.data(),
-                                    vkhlf::checked_cast<uint32_t>(extensions.size()), extensions.data());
+      vkhlf::checked_cast<uint32_t>(extensions.size()), extensions.data());
     m_device = static_cast<vk::PhysicalDevice>(*get<PhysicalDevice>()).createDevice(createInfo, *get<Allocator>());
 
-    m_queues.resize(createInfo.queueCreateInfoCount);
-    for (uint32_t i = 0; i<createInfo.queueCreateInfoCount; i++)
+    for (auto const& createInfo : queueCreateInfos)
     {
-      m_queues[i].resize(createInfo.pQueueCreateInfos[i].queueCount);
+      std::vector<std::unique_ptr<vkhlf::Queue>> queues;
+      for (uint32_t queueIndex = 0; queueIndex < static_cast<uint32_t>(createInfo.queuePriorities.size()); ++queueIndex)
+      {
+        vk::Queue queue = m_device.getQueue(createInfo.queueFamilyIndex, queueIndex);
+        queues.push_back(std::move(std::unique_ptr<vkhlf::Queue>(new Queue(shared_from_this(), queue))));
+      }
+      auto it = m_queues.emplace(createInfo.queueFamilyIndex, std::move(queues));
+      assert(it.second && "duplicate queueFamilyIndex");
     }
   }
 
@@ -122,21 +142,17 @@ namespace vkhlf
 
   std::shared_ptr<vkhlf::Queue> Device::getQueue(uint32_t familyIndex, uint32_t queueIndex)
   {
-    assert((familyIndex < m_queues.size()) && (queueIndex<m_queues[familyIndex].size()));
+    auto it = m_queues.find(familyIndex);
+    assert(it != m_queues.end() && "invalid queue family index");
+    assert(queueIndex < it->second.size());
 
-    std::shared_ptr<vkhlf::Queue> queue = m_queues[familyIndex][queueIndex].lock();
-    if (!queue)
-    {
-      queue = std::make_shared<vkhlf::Queue>(shared_from_this(), familyIndex, queueIndex);
-      m_queues[familyIndex][queueIndex] = queue;
-    }
-    return queue;
+    return std::shared_ptr<vkhlf::Queue>(shared_from_this(), it->second[queueIndex].get());
   }
 
   size_t Device::getQueueCount(uint32_t familyIndex) const
   {
-    assert(familyIndex < m_queues.size());
-    return m_queues[familyIndex].size();
+    auto it = m_queues.find(familyIndex);
+    return it != m_queues.end() ? it->second.size() : 0;
   }
 
   size_t Device::getQueueFamilyCount() const

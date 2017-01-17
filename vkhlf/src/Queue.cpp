@@ -190,13 +190,11 @@ namespace vkhlf
   }
 
 
-  Queue::Queue(std::shared_ptr<vkhlf::Device> const& device, uint32_t queueFamilyIndex, uint32_t queueIndex)
-    : Reference(device)
-#if !defined(NDEBUG)
-    , m_familyIndex(queueFamilyIndex)
-#endif
+  Queue::Queue(std::shared_ptr<vkhlf::Device> const& device, vk::Queue queue)
+    : m_device(device)
+    , m_queue(queue)
   {
-    m_queue = static_cast<vk::Device>(*get<Device>()).getQueue(queueFamilyIndex, queueIndex);
+
   }
 
   Queue::~Queue( )
@@ -210,7 +208,7 @@ namespace vkhlf
     // a fence which hasn't been completed. Thus there shouldn't be an entry in the map using the specified fence.
     releaseResources();
 
-    std::shared_ptr<Fence> fence = fenceIn ? fenceIn : get<Device>()->createFence(false);
+    std::shared_ptr<Fence> fence = fenceIn ? fenceIn : getDevice()->createFence(false);
 #if !defined(NDEBUG)
     assert(!fence->isSignaled());
     assert(m_bindSparseInfos.find(fence) == m_bindSparseInfos.end());
@@ -371,7 +369,7 @@ namespace vkhlf
     releaseResources();
 
     // create a new fence if none has been passed to track completion of the submit.
-    std::shared_ptr<Fence> fence = fenceIn ? fenceIn : get<Device>()->createFence(false);
+    std::shared_ptr<Fence> fence = fenceIn ? fenceIn : getDevice()->createFence(false);
 
     m_submitInfos.insert(std::make_pair(fence, std::vector<SubmitInfo>(submitInfos.begin(), submitInfos.end())));
 
@@ -401,7 +399,6 @@ namespace vkhlf
             assert((*sit)->isSimultaneousUsageAllowed() || !(*it)->getResourceTracker()->isUsed());
             assert((*sit)->getPrimaryCommandBuffer() == *it);
           }
-          assert((*it)->get<CommandPool>()->getFamilyIndex() == m_familyIndex);
         }
         for ( std::vector<std::shared_ptr<vkhlf::Semaphore>>::const_iterator it = si.signalSemaphores.begin() ; it != si.signalSemaphores.end() ; ++it )
         {
@@ -527,13 +524,13 @@ namespace vkhlf
 
   void submitAndWait(std::shared_ptr<Queue> const& queue, std::shared_ptr<CommandBuffer> const& commandBuffer, std::shared_ptr<Allocator> const& fenceAllocator)
   {
-    std::shared_ptr<Fence> fence = queue->get<Device>()->createFence(false, fenceAllocator);
+    std::shared_ptr<Fence> fence = queue->getDevice()->createFence(false, fenceAllocator);
     queue->submit(commandBuffer, fence);
 
     vk::Result vkRes;
     do
     {
-      vkRes = queue->get<Device>()->waitForFences(fence, true, 0);    // some timeout ?
+      vkRes = queue->getDevice()->waitForFences(fence, true, 0);    // some timeout ?
     } while (vkRes == vk::Result::eTimeout);
     assert(vkRes == vk::Result::eSuccess);
   }

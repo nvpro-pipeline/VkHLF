@@ -178,7 +178,7 @@ namespace vkhlf
     : Reference(device, allocator)
   {}
 
-  void Pipeline::setPipeline(vk::Pipeline & pipeline)
+  void Pipeline::setPipeline(vk::Pipeline const& pipeline)
   {
     m_pipeline = pipeline;
   }

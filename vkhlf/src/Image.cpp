@@ -54,8 +54,8 @@ namespace vkhlf
     , m_arrayLayers(arrayLayers)
     , m_extent(extent)
     , m_format(format)
-    , m_memoryPropertyFlags(memoryPropertyFlags)
     , m_managed(true)
+    , m_memoryPropertyFlags(memoryPropertyFlags)
     , m_mipLevels(mipLevels)
     , m_queueFamilyIndices(queueFamilyIndices)
     , m_samples(samples)
@@ -187,8 +187,8 @@ namespace vkhlf
 #endif
 
   MappedImage::MappedImage(std::shared_ptr<Image> const& image, std::shared_ptr<CommandBuffer> const& commandBuffer, vk::DeviceSize offset, vk::DeviceSize size)
-    : m_image(image)
-    , m_commandBuffer(commandBuffer)
+    : m_commandBuffer(commandBuffer)
+    , m_image(image)
     , m_offset(offset)
     , m_size((size == VK_WHOLE_SIZE) ? image->get<DeviceMemory>()->getSize() - offset : size)
   {

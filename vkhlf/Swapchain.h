@@ -49,8 +49,8 @@ namespace vkhlf
 
       VKHLF_API operator vk::SwapchainKHR() const;
 
-      VKHLF_API Swapchain(Swapchain const& rhs) = delete;
-      VKHLF_API Swapchain & operator=(Swapchain const& rhs) = delete;
+      Swapchain(Swapchain const& rhs) = delete;
+      Swapchain & operator=(Swapchain const& rhs) = delete;
 
     private:
       std::vector<std::shared_ptr<Image>>     m_images;

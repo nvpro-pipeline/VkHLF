@@ -79,8 +79,8 @@ namespace vkhlf
 
       VKHLF_API operator vk::Instance();
 
-      VKHLF_API Instance(Instance const& rhs) = delete;
-      VKHLF_API Instance & operator=(Instance const& rhs) = delete;
+      Instance(Instance const& rhs) = delete;
+      Instance & operator=(Instance const& rhs) = delete;
 
     private:
       std::shared_ptr<Allocator>                      m_allocator;

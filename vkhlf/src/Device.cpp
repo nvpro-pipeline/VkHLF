@@ -218,8 +218,13 @@ namespace vkhlf
       dbis.push_back(std::unique_ptr<vk::DescriptorBufferInfo>(w.bufferInfo ? new vk::DescriptorBufferInfo(w.bufferInfo->buffer ? static_cast<vk::Buffer>(*w.bufferInfo->buffer) : nullptr,
                                                                                                            w.bufferInfo->offset, w.bufferInfo->range)
                                                                             : nullptr));
-      writes.push_back(vk::WriteDescriptorSet(w.dstSet ? static_cast<vk::DescriptorSet>(*w.dstSet) : nullptr, w.dstBinding, w.dstArrayElement, w.descriptorCount, w.descriptorType, diis.back().get(),
-                                              dbis.back().get(), w.texelBufferView ? &static_cast<vk::BufferView>(*w.texelBufferView) : nullptr));
+      vk::WriteDescriptorSet write(w.dstSet ? static_cast<vk::DescriptorSet>(*w.dstSet) : nullptr, w.dstBinding, w.dstArrayElement, w.descriptorCount, w.descriptorType, diis.back().get(), dbis.back().get());
+      if (w.texelBufferView)
+      {
+        vk::BufferView bufferView = static_cast<vk::BufferView>(*w.texelBufferView);
+        write.setPTexelBufferView(&bufferView);
+      }
+      writes.push_back(std::move(write));
     }
 
     std::vector<vk::CopyDescriptorSet> copies;

@@ -49,8 +49,8 @@ namespace vkhlf
 
       VKHLF_API operator vk::CommandPool() const;
 
-      VKHLF_API CommandPool(CommandPool const& rhs) = delete;
-      VKHLF_API CommandPool & operator=(CommandPool const& rhs) = delete;
+      CommandPool(CommandPool const& rhs) = delete;
+      CommandPool & operator=(CommandPool const& rhs) = delete;
 
 #if !defined(NDEBUG)
       VKHLF_API uint32_t getFamilyIndex() const;

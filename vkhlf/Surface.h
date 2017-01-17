@@ -46,8 +46,8 @@ namespace vkhlf
 
       VKHLF_API operator vk::SurfaceKHR() const;
 
-      VKHLF_API Surface(Surface const& rhs) = delete;
-      VKHLF_API Surface & operator=(Surface const& rhs) = delete;
+      Surface(Surface const& rhs) = delete;
+      Surface & operator=(Surface const& rhs) = delete;
 
     private:
     vk::SurfaceKHR  m_surface;

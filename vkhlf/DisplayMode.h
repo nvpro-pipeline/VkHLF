@@ -45,8 +45,8 @@ namespace vkhlf
 
       VKHLF_API operator vk::DisplayModeKHR() const;
 
-      VKHLF_API DisplayMode(DisplayMode const& rhs) = delete;
-      VKHLF_API DisplayMode & operator=(DisplayMode const& rhs) = delete;
+      DisplayMode(DisplayMode const& rhs) = delete;
+      DisplayMode & operator=(DisplayMode const& rhs) = delete;
 
     private:
       vk::DisplayModeKHR  m_displayMode;

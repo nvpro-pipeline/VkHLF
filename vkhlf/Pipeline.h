@@ -124,12 +124,12 @@ namespace vkhlf
 
       VKHLF_API operator vk::Pipeline() const;
 
-      VKHLF_API Pipeline(Pipeline const& rhs) = delete;
-      VKHLF_API Pipeline & operator=(Pipeline const& rhs) = delete;
+      Pipeline(Pipeline const& rhs) = delete;
+      Pipeline & operator=(Pipeline const& rhs) = delete;
 
     protected:
       VKHLF_API Pipeline(std::shared_ptr<Device> const& device, std::shared_ptr<Allocator> const& allocator);
-      VKHLF_API void setPipeline(vk::Pipeline & pipeline);
+      VKHLF_API void setPipeline(vk::Pipeline const& pipeline);
 
     private:
       vk::Pipeline m_pipeline;

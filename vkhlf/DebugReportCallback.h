@@ -44,8 +44,8 @@ namespace vkhlf
 
       VKHLF_API operator vk::DebugReportCallbackEXT() const;
 
-      VKHLF_API DebugReportCallback(DebugReportCallback const& rhs) = delete;
-      VKHLF_API DebugReportCallback & operator=(DebugReportCallback const& rhs) = delete;
+      DebugReportCallback(DebugReportCallback const& rhs) = delete;
+      DebugReportCallback & operator=(DebugReportCallback const& rhs) = delete;
 
     private:
       vk::DebugReportCallbackEXT  m_debugReportCallback;

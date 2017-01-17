@@ -46,8 +46,8 @@ namespace vkhlf
 
       VKHLF_API operator vk::Event() const;
 
-      VKHLF_API Event(Event const& rhs) = delete;
-      VKHLF_API Event & operator=(Event const& rhs) = delete;
+      Event(Event const& rhs) = delete;
+      Event & operator=(Event const& rhs) = delete;
 
     private:
       vk::Event m_event;

@@ -59,7 +59,7 @@ namespace vkhlf
     assert(!"QueryPool::getResults: need to determine size of queried data!");
     std::vector<uint8_t> data;
     VK_VERIFY(static_cast<vk::Device>(*get<Device>()).getQueryPoolResults<uint8_t>(m_query, startQuery, queryCount, data, stride, flags));
-    return std::move(data);
+    return data;
   }
 
 #if !defined(NDEBUG)

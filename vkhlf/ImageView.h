@@ -43,8 +43,8 @@ namespace vkhlf
 
       VKHLF_API operator vk::ImageView();
 
-      VKHLF_API ImageView(ImageView const& rhs) = delete;
-      VKHLF_API ImageView & operator=(ImageView const& rhs) = delete;
+      ImageView(ImageView const& rhs) = delete;
+      ImageView & operator=(ImageView const& rhs) = delete;
 
     private:
       vk::ImageView m_imageView;

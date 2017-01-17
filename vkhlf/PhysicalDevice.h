@@ -99,8 +99,8 @@ namespace vkhlf
 
       VKHLF_API operator vk::PhysicalDevice() const;
 
-      VKHLF_API PhysicalDevice(PhysicalDevice const& rhs) = delete;
-      VKHLF_API PhysicalDevice & operator=(PhysicalDevice const& rhs) = delete;
+      PhysicalDevice(PhysicalDevice const& rhs) = delete;
+      PhysicalDevice & operator=(PhysicalDevice const& rhs) = delete;
 
     private:
       vk::PhysicalDevice  m_physicalDevice;

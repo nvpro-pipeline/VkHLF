@@ -70,8 +70,8 @@ namespace vkhlf
 
       VKHLF_API operator vk::Image () const;
 
-      VKHLF_API Image(Image const& rhs) = delete;
-      VKHLF_API Image & operator=(Image const& rhs) = delete;
+      Image(Image const& rhs) = delete;
+      Image & operator=(Image const& rhs) = delete;
 
     private:
       uint32_t                m_arrayLayers;

@@ -48,8 +48,8 @@ namespace vkhlf
 
       VKHLF_API operator vk::Fence() const;
 
-      VKHLF_API Fence(Fence const& rhs) = delete;
-      VKHLF_API Fence & operator=(Fence const& rhs) = delete;
+      Fence(Fence const& rhs) = delete;
+      Fence & operator=(Fence const& rhs) = delete;
 
     private:
       vk::Fence m_fence;

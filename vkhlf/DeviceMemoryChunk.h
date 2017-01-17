@@ -48,8 +48,8 @@ namespace vkhlf
 
       VKHLF_API operator vk::DeviceMemory() const;
 
-      VKHLF_API DeviceMemoryChunk(DeviceMemoryChunk const& rhs) = delete;
-      VKHLF_API DeviceMemoryChunk & operator=(DeviceMemoryChunk const& rhs) = delete;
+      DeviceMemoryChunk(DeviceMemoryChunk const& rhs) = delete;
+      DeviceMemoryChunk & operator=(DeviceMemoryChunk const& rhs) = delete;
 
     private:
       vk::DeviceMemory  m_deviceMemory;

@@ -46,8 +46,8 @@ namespace vkhlf
       VKHLF_API bool isSignalled() const;
 #endif
 
-      VKHLF_API Semaphore(Semaphore const& rhs) = delete;
-      VKHLF_API Semaphore & operator=(Semaphore const& rhs) = delete;
+      Semaphore(Semaphore const& rhs) = delete;
+      Semaphore & operator=(Semaphore const& rhs) = delete;
 
     private:
       vk::Semaphore m_semaphore;

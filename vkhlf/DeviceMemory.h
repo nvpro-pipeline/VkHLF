@@ -50,8 +50,8 @@ namespace vkhlf
       VKHLF_API void *         map(vk::DeviceSize offset, vk::DeviceSize size);
       VKHLF_API void           unmap();
 
-      VKHLF_API DeviceMemory(DeviceMemory const& rhs) = delete;
-      VKHLF_API DeviceMemory & operator=(DeviceMemory const& rhs) = delete;
+      DeviceMemory(DeviceMemory const& rhs) = delete;
+      DeviceMemory & operator=(DeviceMemory const& rhs) = delete;
 
     private:
       vk::DeviceSize  m_offset;

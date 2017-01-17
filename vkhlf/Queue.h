@@ -138,8 +138,8 @@ namespace vkhlf
 
       VKHLF_API operator vk::Queue() const;
 
-      VKHLF_API Queue(Queue const& rhs) = delete;
-      VKHLF_API Queue & operator=(Queue const& rhs) = delete;
+      Queue(Queue const& rhs) = delete;
+      Queue & operator=(Queue const& rhs) = delete;
 
     private:
       VKHLF_API void releaseResources();

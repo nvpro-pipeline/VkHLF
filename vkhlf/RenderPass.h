@@ -49,8 +49,8 @@ namespace vkhlf
 
       VKHLF_API operator vk::RenderPass() const;
 
-      VKHLF_API RenderPass(RenderPass const& rhs) = delete;
-      VKHLF_API RenderPass & operator=(RenderPass const& rhs) = delete;
+      RenderPass(RenderPass const& rhs) = delete;
+      RenderPass & operator=(RenderPass const& rhs) = delete;
 
     private:
       vk::RenderPass  m_renderPass;

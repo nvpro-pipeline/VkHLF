@@ -29,7 +29,7 @@ cmake_minimum_required(VERSION 2.8)
 
 project( 02_triangle )
 
-find_package(glfw3 3.2 REQUIRED)
+find_package(GLFW3 3.2 REQUIRED)
 
 if (GLFW_FOUND)
 

@@ -30,8 +30,7 @@
 #include <vkhlf/Config.h>
 #include <vkhlf/Types.h>
 #include <vkhlf/Reference.h>
-#include <vulkan/../../glslang/glslang/Public/ShaderLang.h>
-#include <vulkan/../../glslang/SPIRV/GlslangToSpv.h>
+#include <glslang/SPIRV/GlslangToSpv.h>
 #include <vector>
 
 namespace vkhlf

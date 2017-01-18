@@ -14,6 +14,8 @@ not be used for production code yet!
 * Clone the repository.
 * Execute git submodule update --init --recursive to get the 3rdparty dependencies. Alternatevely unpack glfw3 in 3rdparty/glfw.
 * Install Vulkan SDK 1.0.37 or newer.
+* Build some glslang related libs by following the build instructions described in the file Build.md in the glslang subdirectory of the VulkanSDK.
+* Build a spirv-tools library by following the build instructions described in the file Build.md in the spirv-tools subdirectory of the VulkanSDK.
 * Run CMake to generate the makefiles of your choice.
 
 # VkHLF namespace
@@ -46,7 +48,7 @@ completely transparent to the developer.
 
 # VkHLF GPU Resource Tracking
 Vulkan does not have any automatic resource tracking. It is possible to change or delete resources which are currently
-in use on the GPU which will most likely result in strage behaviour, or worst case in an application or system crash.
+in use on the GPU which will most likely result in strange behaviour, or worst case in an application or system crash.
 
 It is essential to ensure that resources do not get destroyed while they are still in use by the GPU. Thus we have implemented
 a ```vkhlf::ResourceTracker``` interface used by ```vkhlf::CommandBuffer``` to track all resources used to build up the 

@@ -40,6 +40,11 @@ option(GLFW_BUILD_DOCS "Build the GLFW documentation" OFF)
 option(GLFW_INSTALL "Generate installation target" OFF)
 add_subdirectory(3rdparty/glfw)
 
+#add glslang
+option(ENABLE_GLSLANG_BINARIES "Enable GLSLang Binaries" OFF)
+add_subdirectory(3rdparty/glslang)
+
+
 set(ENV{GLFW_ROOT} ${CMAKE_CURRENT_SOURCE_DIR}/3rdParty/glfw)
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)

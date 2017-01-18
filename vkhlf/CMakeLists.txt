@@ -136,6 +136,7 @@ add_library( VkHLF SHARED
 target_include_directories(VkHLF
   PUBLIC    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/private>
   PUBLIC    "$ENV{VK_SDK_PATH}/include"
+  PUBLIC    "${CMAKE_SOURCE_DIR}/3rdparty"
   INTERFACE $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/private>
   INTERFACE "$ENV{VK_SDK_PATH}/include"
   INTERFACE  "${PROJECT_SOURCE_DIR}"
@@ -145,15 +146,9 @@ target_include_directories(VkHLF
 target_link_libraries( VkHLF
   ${OPENGL_gl_LIBRARY}
   "$ENV{VK_SDK_PATH}/Bin/vulkan-1.lib"
-  debug "$ENV{VK_SDK_PATH}/glslang/build/glslang/$(Configuration)/glslangd.lib"
-  optimized "$ENV{VK_SDK_PATH}/glslang/build/glslang/$(Configuration)/glslang.lib"
-  debug "$ENV{VK_SDK_PATH}/glslang/build/OGLCompilersDLL/$(Configuration)/OGLCompilerd.lib"
-  optimized "$ENV{VK_SDK_PATH}/glslang/build/OGLCompilersDLL/$(Configuration)/OGLCompiler.lib"
-  debug "$ENV{VK_SDK_PATH}/glslang/build/glslang/OSDependent/Windows/$(Configuration)/OSDependentd.lib"
-  optimized "$ENV{VK_SDK_PATH}/glslang/build/glslang/OSDependent/Windows/$(Configuration)/OSDependent.lib"
-  debug "$ENV{VK_SDK_PATH}/glslang/build/hlsl/$(Configuration)/HLSLd.lib"
-  optimized "$ENV{VK_SDK_PATH}/glslang/build/hlsl/$(Configuration)/HLSL.lib"
-  debug "$ENV{VK_SDK_PATH}/glslang/build/SPIRV/$(Configuration)/SPIRVd.lib"
-  optimized "$ENV{VK_SDK_PATH}/glslang/build/SPIRV/$(Configuration)/SPIRV.lib"
-  "$ENV{VK_SDK_PATH}/spirv-tools/build/source/$(Configuration)/SPIRV-Tools.lib"
+  glslang
+  OGLCompiler
+  OSDependent
+  HLSL
+  SPIRV
 )

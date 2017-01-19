@@ -40,23 +40,6 @@
 #include <system_error>
 #include <vector>
 
-#include <vkhlf/Buffer.h>
-#include <vkhlf/CommandBuffer.h>
-#include <vkhlf/CommandPool.h>
-#include <vkhlf/DeviceMemoryAllocator.h>
-#include <vkhlf/DescriptorSetLayout.h>
-#include <vkhlf/Fence.h>
-#include <vkhlf/Framebuffer.h>
-#include <vkhlf/Image.h>
-#include <vkhlf/ImageView.h>
-#include <vkhlf/Instance.h>
-#include <vkhlf/PhysicalDevice.h>
-#include <vkhlf/PipelineCache.h>
-#include <vkhlf/Queue.h>
-#include <vkhlf/RenderPass.h>
-#include <vkhlf/Semaphore.h>
-#include <vkhlf/Swapchain.h>
-
 #include <VkHLFSampleWindow.h>
 
 #define FENCE_TIMEOUT 100000000
@@ -149,9 +132,8 @@ Window::Window(char const* title, int width, int height)
   vkhlf::submitAndWait(getGraphicsQueue(), commandBuffer);
 
   // init shaders
-  vkhlf::GLSLToSpearVConverter converter;
-  std::shared_ptr<vkhlf::ShaderModule> vertexShaderModule = getDevice()->createShaderModule(converter.convert(vk::ShaderStageFlagBits::eVertex, vertShaderText));
-  std::shared_ptr<vkhlf::ShaderModule> fragmentShaderModule = getDevice()->createShaderModule(converter.convert(vk::ShaderStageFlagBits::eFragment, fragShaderText));
+  std::shared_ptr<vkhlf::ShaderModule> vertexShaderModule = getDevice()->createShaderModule(vkhlf::compileGLSLToSPIRV(vk::ShaderStageFlagBits::eVertex, vertShaderText));
+  std::shared_ptr<vkhlf::ShaderModule> fragmentShaderModule = getDevice()->createShaderModule(vkhlf::compileGLSLToSPIRV(vk::ShaderStageFlagBits::eFragment, fragShaderText));
 
   // init pipeline
   std::shared_ptr<vkhlf::PipelineCache> pipelineCache = getDevice()->createPipelineCache(0, nullptr);

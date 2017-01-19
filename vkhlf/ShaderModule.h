@@ -42,7 +42,7 @@ namespace vkhlf
       VKHLF_API ShaderModule(std::shared_ptr<Device> const & device, vk::ArrayProxy<const uint32_t> code, std::shared_ptr<Allocator> const& allocator);
       VKHLF_API ~ShaderModule();
 
-      VKHLF_API operator vk::ShaderModule() const;
+      operator vk::ShaderModule() const { return m_shaderModule; }
 
       ShaderModule(ShaderModule const& rhs) = delete;
       ShaderModule & operator=(ShaderModule const& rhs) = delete;
@@ -51,21 +51,6 @@ namespace vkhlf
       vk::ShaderModule m_shaderModule;
   };
 
-  class GLSLToSpearVConverter
-  {
-    public:
-      VKHLF_API GLSLToSpearVConverter();
-      VKHLF_API ~GLSLToSpearVConverter();
+  VKHLF_API std::vector<uint32_t> compileGLSLToSPIRV(vk::ShaderStageFlagBits stage, std::string const & source);
 
-      VKHLF_API std::vector<uint32_t> convert(vk::ShaderStageFlagBits stage, std::string const & source);
-
-    private:
-      TBuiltInResource  m_resource;
-  };
-
-  inline ShaderModule::operator vk::ShaderModule() const
-  {
-    return m_shaderModule;
-  }
-
-} // namespace vk
+} // namespace vkhlf

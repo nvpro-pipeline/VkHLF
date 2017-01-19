@@ -28,6 +28,7 @@
 
 #include <vkhlf/Device.h>
 #include <vkhlf/ShaderModule.h>
+#include <glslang/SPIRV/GlslangToSpv.h>
 #include <map>
 
 namespace vkhlf
@@ -45,7 +46,20 @@ namespace vkhlf
     static_cast<vk::Device>(*get<Device>()).destroyShaderModule(m_shaderModule, *get<Allocator>());
   }
 
-  GLSLToSpearVConverter::GLSLToSpearVConverter()
+
+  class GLSLToSPIRVCompiler
+  {
+  public:
+    VKHLF_API GLSLToSPIRVCompiler();
+    VKHLF_API ~GLSLToSPIRVCompiler();
+
+    VKHLF_API std::vector<uint32_t> compile(vk::ShaderStageFlagBits stage, std::string const & source) const;
+
+  private:
+    TBuiltInResource  m_resource;
+  };
+
+  GLSLToSPIRVCompiler::GLSLToSPIRVCompiler()
   {
 #ifndef __ANDROID__
     glslang::InitializeProcess();
@@ -145,14 +159,14 @@ namespace vkhlf
     m_resource.limits.generalConstantMatrixVectorIndexing = 1;
   }
 
-  GLSLToSpearVConverter::~GLSLToSpearVConverter()
+  GLSLToSPIRVCompiler::~GLSLToSPIRVCompiler()
   {
 #ifndef __ANDROID__
     glslang::FinalizeProcess();
 #endif
   }
 
-  std::vector<uint32_t> GLSLToSpearVConverter::convert(vk::ShaderStageFlagBits stage, std::string const & source)
+  std::vector<uint32_t> GLSLToSPIRVCompiler::compile(vk::ShaderStageFlagBits stage, std::string const & source) const
   {
     static const std::map<vk::ShaderStageFlagBits, EShLanguage> stageToLanguageMap
     {
@@ -198,4 +212,10 @@ namespace vkhlf
     return code;
   }
 
-} // namespace vk
+  std::vector<uint32_t> compileGLSLToSPIRV(vk::ShaderStageFlagBits stage, std::string const & source)
+  {
+    static GLSLToSPIRVCompiler compiler;
+    return compiler.compile(stage, source);
+  }
+
+} // namespace vkhlf

@@ -241,9 +241,8 @@ Window::Window(char const* title, int width, int height)
   vkhlf::submitAndWait(getGraphicsQueue(), commandBuffer);
 
   // init shaders
-  vkhlf::GLSLToSpearVConverter converter;
-  std::shared_ptr<vkhlf::ShaderModule> vertexShaderModule = getDevice()->createShaderModule(converter.convert(vk::ShaderStageFlagBits::eVertex, vertShaderText));
-  std::shared_ptr<vkhlf::ShaderModule> fragmentShaderModule = getDevice()->createShaderModule(converter.convert(vk::ShaderStageFlagBits::eFragment, fragShaderText));
+  std::shared_ptr<vkhlf::ShaderModule> vertexShaderModule = getDevice()->createShaderModule(vkhlf::compileGLSLToSPIRV(vk::ShaderStageFlagBits::eVertex, vertShaderText));
+  std::shared_ptr<vkhlf::ShaderModule> fragmentShaderModule = getDevice()->createShaderModule(vkhlf::compileGLSLToSPIRV(vk::ShaderStageFlagBits::eFragment, fragShaderText));
 
   // init pipeline
   std::shared_ptr<vkhlf::PipelineCache> pipelineCache = getDevice()->createPipelineCache(0, nullptr);

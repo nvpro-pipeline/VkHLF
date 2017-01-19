@@ -12,10 +12,8 @@ not be used for production code yet!
 # Build instructions
 
 * Clone the repository.
-* Execute git submodule update --init --recursive to get the 3rdparty dependencies. Alternatevely unpack glfw3 in 3rdparty/glfw.
+* Execute git submodule update --init --recursive to get the 3rdparty dependencies. Alternatevely unpack glfw3 in 3rdparty/glfw and glslang in 3rdparty/glslang.
 * Install Vulkan SDK 1.0.37 or newer.
-* Build some glslang related libs by following the build instructions described in the file Build.md in the glslang subdirectory of the VulkanSDK.
-* Build a spirv-tools library by following the build instructions described in the file Build.md in the spirv-tools subdirectory of the VulkanSDK.
 * Run CMake to generate the makefiles of your choice.
 
 # VkHLF namespace

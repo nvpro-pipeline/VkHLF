@@ -25,11 +25,7 @@
 * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#define VK_USE_PLATFORM_WIN32_KHR
-#include <Windows.h>
-#if defined(MemoryBarrier)
-# undef MemoryBarrier
-#endif
+#include <VkHLFSampleWindow.h>
 
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
@@ -39,8 +35,6 @@
 #include <memory>
 #include <system_error>
 #include <vector>
-
-#include <VkHLFSampleWindow.h>
 
 #define FENCE_TIMEOUT 100000000
 

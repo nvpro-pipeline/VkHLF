@@ -30,8 +30,8 @@
 #include <vkhlf/Config.h>
 #include <vkhlf/Types.h>
 #include <vkhlf/Reference.h>
-#include <glslang/SPIRV/GlslangToSpv.h>
 #include <vector>
+#include <map>
 
 namespace vkhlf
 {

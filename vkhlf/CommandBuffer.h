@@ -160,7 +160,7 @@ namespace vkhlf
       };
 
     private:
-      vk::CommandBuffer                                m_commandBuffer;
+      vk::CommandBuffer                                  m_commandBuffer;
       std::shared_ptr<vkhlf::RenderPass>                 m_renderPass;
       std::shared_ptr<vkhlf::Framebuffer>                m_framebuffer;
       std::vector<std::shared_ptr<vkhlf::CommandBuffer>> m_secondaryCommandBuffers;    // this belongs into a PrimaryCommandBuffer only
@@ -169,7 +169,7 @@ namespace vkhlf
       std::vector<::vk::DescriptorSet> m_bindDescriptorSets;
       std::vector<::vk::Buffer>        m_bindVertexBuffers;
 
-      std::shared_ptr<ResourceTracker>       m_resourceTracker;
+      std::shared_ptr<ResourceTracker>  m_resourceTracker;
 #if !defined(NDEBUG)
       vk::CommandBufferUsageFlags       m_flags;
       bool                              m_inRenderPass;
@@ -183,8 +183,8 @@ namespace vkhlf
 #endif
   };
 
-  VKHLF_API void setImageLayout(std::shared_ptr<vkhlf::CommandBuffer> const& commandBuffer, std::shared_ptr<vkhlf::Image> const& image, vk::ImageAspectFlags aspectMask, vk::ImageLayout oldImageLayout,
-                             vk::ImageLayout newImageLayout);
+  VKHLF_API void setImageLayout(std::shared_ptr<vkhlf::CommandBuffer> const& commandBuffer, std::shared_ptr<vkhlf::Image> const& image, vk::ImageSubresourceRange const& subresourceRange, vk::ImageLayout oldImageLayout, vk::ImageLayout newImageLayout);
+  VKHLF_API void setImageLayout(std::shared_ptr<vkhlf::CommandBuffer> const& commandBuffer, std::shared_ptr<vkhlf::Image> const& image, vk::ImageAspectFlags aspectMask, vk::ImageLayout oldImageLayout, vk::ImageLayout newImageLayout);
 
 
   inline std::vector<std::shared_ptr<vkhlf::CommandBuffer>> const& CommandBuffer::getSecondaryCommandBuffers() const
@@ -202,6 +202,12 @@ namespace vkhlf
   {
     m_resourceTracker->track(destBuffer);
     m_commandBuffer.updateBuffer<T>(*destBuffer, destOffset, data);
+  }
+
+
+  inline void setImageLayout(std::shared_ptr<vkhlf::CommandBuffer> const& commandBuffer, std::shared_ptr<vkhlf::Image> const& image, vk::ImageAspectFlags aspectMask, vk::ImageLayout oldImageLayout, vk::ImageLayout newImageLayout)
+  {
+    setImageLayout(commandBuffer, image, vk::ImageSubresourceRange(aspectMask, 0, 1, 0, 1), oldImageLayout, newImageLayout);
   }
 
 } // namespace vk

@@ -661,11 +661,20 @@ namespace vkhlf
     vk::AccessFlags srcAccessMask;
     switch (oldImageLayout)
     {
+      case vk::ImageLayout::eTransferDstOptimal:
+        srcAccessMask = vk::AccessFlagBits::eTransferWrite;
+        break;
+      case vk::ImageLayout::eTransferSrcOptimal:
+        srcAccessMask = vk::AccessFlagBits::eTransferRead;
+        break;
+      case vk::ImageLayout::eShaderReadOnlyOptimal:
+        srcAccessMask = vk::AccessFlagBits::eShaderRead;
+        break;
       case vk::ImageLayout::eColorAttachmentOptimal:
         srcAccessMask = vk::AccessFlagBits::eColorAttachmentWrite;
         break;
-      case vk::ImageLayout::eTransferDstOptimal:
-        srcAccessMask = vk::AccessFlagBits::eTransferWrite;
+      case vk::ImageLayout::eDepthStencilAttachmentOptimal:
+        srcAccessMask = vk::AccessFlagBits::eDepthStencilAttachmentWrite;
         break;
       case vk::ImageLayout::ePreinitialized:
         srcAccessMask = vk::AccessFlagBits::eHostWrite;

@@ -656,8 +656,7 @@ namespace vkhlf
   }
 #endif
 
-  void setImageLayout(std::shared_ptr<vkhlf::CommandBuffer> const& commandBuffer, std::shared_ptr<vkhlf::Image> const& image, vk::ImageAspectFlags aspectMask, vk::ImageLayout oldImageLayout,
-                      vk::ImageLayout newImageLayout)
+  void setImageLayout(std::shared_ptr<vkhlf::CommandBuffer> const& commandBuffer, std::shared_ptr<vkhlf::Image> const& image, vk::ImageSubresourceRange const& subresourceRange, vk::ImageLayout oldImageLayout, vk::ImageLayout newImageLayout)
   {
     vk::AccessFlags srcAccessMask;
     switch (oldImageLayout)
@@ -697,8 +696,7 @@ namespace vkhlf
         break;
     }
 
-    vkhlf::ImageMemoryBarrier imageMemoryBarrier(srcAccessMask, dstAccessMask, oldImageLayout, newImageLayout, VK_QUEUE_FAMILY_IGNORED, VK_QUEUE_FAMILY_IGNORED, image,
-                                               vk::ImageSubresourceRange(aspectMask, 0, 1, 0, 1));
+    vkhlf::ImageMemoryBarrier imageMemoryBarrier(srcAccessMask, dstAccessMask, oldImageLayout, newImageLayout, VK_QUEUE_FAMILY_IGNORED, VK_QUEUE_FAMILY_IGNORED, image, subresourceRange);
 
     assert(commandBuffer->isRecording());
     commandBuffer->pipelineBarrier(vk::PipelineStageFlagBits::eTopOfPipe, vk::PipelineStageFlagBits::eTopOfPipe, {}, nullptr, nullptr, imageMemoryBarrier);

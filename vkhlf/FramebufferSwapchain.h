@@ -46,6 +46,7 @@ namespace vkhlf {
             std::shared_ptr<Allocator> const& imageViewAllocator = nullptr);
 
         void acquireNextFrame() { m_swapchainIndex = m_swapchain->acquireNextImage(); }
+        void acquireNextFrame(uint64_t timeout, std::shared_ptr<Fence> const& fence) { m_swapchainIndex = m_swapchain->acquireNextImage(timeout, fence); }
 
         std::shared_ptr<Framebuffer> const& getFramebuffer() const { return m_framebuffers[m_swapchainIndex]; }
 

@@ -31,7 +31,6 @@
 #include <vkhlf/Types.h>
 #include <vkhlf/Reference.h>
 #include <vector>
-#include <map>
 
 namespace vkhlf
 {

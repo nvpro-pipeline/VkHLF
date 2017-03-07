@@ -457,11 +457,6 @@ namespace vkhlf
     m_commandBuffer.pipelineBarrier(srcStageMask, destStageMask, dependencyFlags, barriers, bufferMemoryBarriers, imbs);
   }
 
-  void CommandBuffer::pushConstants(vk::PipelineLayout layout, vk::ShaderStageFlags stageFlags, uint32_t start, vk::ArrayProxy<const uint8_t> values)
-  {
-    m_commandBuffer.pushConstants<uint8_t>(layout, stageFlags, start, values );
-  }
-
   void CommandBuffer::reset( vk::CommandBufferResetFlags flags )
   {
     assert(get<CommandPool>()->individuallyResetCommandBuffers());

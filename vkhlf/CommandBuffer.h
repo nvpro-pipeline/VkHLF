@@ -103,7 +103,7 @@ namespace vkhlf
       VKHLF_API void fillBuffer(std::shared_ptr<vkhlf::Buffer> const& dstBuffer, vk::DeviceSize dstOffset, vk::DeviceSize fillSize, uint32_t data);
       VKHLF_API void nextSubpass(vk::SubpassContents contents);
       VKHLF_API void pipelineBarrier(vk::PipelineStageFlags srcStageMask, vk::PipelineStageFlags destStageMask, vk::DependencyFlags dependencyFlags, vk::ArrayProxy<const vk::MemoryBarrier> barriers, vk::ArrayProxy<const vk::BufferMemoryBarrier> bufferMemoryBarriers, vk::ArrayProxy<const ImageMemoryBarrier> imageMemoryBarriers);
-      VKHLF_API void pushConstants(vk::PipelineLayout layout, vk::ShaderStageFlags stageFlags, uint32_t start, vk::ArrayProxy<const uint8_t> values);
+      template <typename T> void pushConstants(vk::PipelineLayout layout, vk::ShaderStageFlags stageFlags, uint32_t start, vk::ArrayProxy<const T> values);
       VKHLF_API void reset(vk::CommandBufferResetFlags flags = {});
       VKHLF_API void resetEvent(std::shared_ptr<vkhlf::Event> const& event, vk::PipelineStageFlags stageMask);
       VKHLF_API void resetQueryPool(std::shared_ptr<vkhlf::QueryPool> const& queryPool, uint32_t startQuery, uint32_t queryCount);
@@ -195,6 +195,12 @@ namespace vkhlf
   inline CommandBuffer::operator vk::CommandBuffer() const
   {
     return m_commandBuffer;
+  }
+
+  template <typename T>
+  void CommandBuffer::pushConstants(vk::PipelineLayout layout, vk::ShaderStageFlags stageFlags, uint32_t start, vk::ArrayProxy<const T> values)
+  {
+    m_commandBuffer.pushConstants<T>(layout, stageFlags, start, values);
   }
 
   template <typename T>

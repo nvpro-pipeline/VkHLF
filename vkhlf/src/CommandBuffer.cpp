@@ -651,45 +651,46 @@ namespace vkhlf
   }
 #endif
 
-  void setImageLayout(std::shared_ptr<vkhlf::CommandBuffer> const& commandBuffer, std::shared_ptr<vkhlf::Image> const& image, vk::ImageSubresourceRange const& subresourceRange, vk::ImageLayout oldImageLayout, vk::ImageLayout newImageLayout)
+  static vk::AccessFlags determineAccessFlags(vk::ImageLayout layout)
   {
-    vk::AccessFlags srcAccessMask;
-    switch (oldImageLayout)
+    vk::AccessFlags accessFlags;
+    switch (layout)
     {
       case vk::ImageLayout::eColorAttachmentOptimal:
-        srcAccessMask = vk::AccessFlagBits::eColorAttachmentWrite;
-        break;
-      case vk::ImageLayout::eTransferDstOptimal:
-        srcAccessMask = vk::AccessFlagBits::eTransferWrite;
-        break;
-      case vk::ImageLayout::ePreinitialized:
-        srcAccessMask = vk::AccessFlagBits::eHostWrite;
-        break;
-      default:
-        break;
-    }
-
-    vk::AccessFlags dstAccessMask;
-    switch (newImageLayout)
-    {
-      case vk::ImageLayout::eTransferDstOptimal:
-        dstAccessMask = vk::AccessFlagBits::eTransferWrite;
-        break;
-      case vk::ImageLayout::eTransferSrcOptimal:
-        dstAccessMask = vk::AccessFlagBits::eTransferRead;
-        break;
-      case vk::ImageLayout::eShaderReadOnlyOptimal:
-        dstAccessMask = vk::AccessFlagBits::eShaderRead;
-        break;
-      case vk::ImageLayout::eColorAttachmentOptimal:
-        dstAccessMask = vk::AccessFlagBits::eColorAttachmentWrite;
+        accessFlags = vk::AccessFlagBits::eColorAttachmentWrite;
         break;
       case vk::ImageLayout::eDepthStencilAttachmentOptimal:
-        dstAccessMask = vk::AccessFlagBits::eDepthStencilAttachmentWrite;
+        accessFlags = vk::AccessFlagBits::eDepthStencilAttachmentWrite;
         break;
+      case vk::ImageLayout::eDepthStencilReadOnlyOptimal:
+        accessFlags = vk::AccessFlagBits::eDepthStencilAttachmentRead;
+        break;
+      case vk::ImageLayout::eShaderReadOnlyOptimal:
+        accessFlags = vk::AccessFlagBits::eShaderRead;
+        break;
+      case vk::ImageLayout::eTransferSrcOptimal:
+        accessFlags = vk::AccessFlagBits::eTransferRead;
+        break;
+      case vk::ImageLayout::eTransferDstOptimal:
+        accessFlags = vk::AccessFlagBits::eTransferWrite;
+        break;
+      case vk::ImageLayout::ePreinitialized:
+        accessFlags = vk::AccessFlagBits::eHostWrite;
+        break;
+      // for all other cases: keep accessFlags == 0
+      case vk::ImageLayout::eUndefined:
+      case vk::ImageLayout::eGeneral:
+      case vk::ImageLayout::ePresentSrcKHR:
       default:
         break;
     }
+    return accessFlags;
+  }
+
+  void setImageLayout(std::shared_ptr<vkhlf::CommandBuffer> const& commandBuffer, std::shared_ptr<vkhlf::Image> const& image, vk::ImageSubresourceRange const& subresourceRange, vk::ImageLayout oldImageLayout, vk::ImageLayout newImageLayout)
+  {
+    vk::AccessFlags srcAccessMask = determineAccessFlags(oldImageLayout);
+    vk::AccessFlags dstAccessMask = determineAccessFlags(newImageLayout);
 
     vkhlf::ImageMemoryBarrier imageMemoryBarrier(srcAccessMask, dstAccessMask, oldImageLayout, newImageLayout, VK_QUEUE_FAMILY_IGNORED, VK_QUEUE_FAMILY_IGNORED, image, subresourceRange);
 
@@ -697,4 +698,4 @@ namespace vkhlf
     commandBuffer->pipelineBarrier(vk::PipelineStageFlagBits::eTopOfPipe, vk::PipelineStageFlagBits::eTopOfPipe, {}, nullptr, nullptr, imageMemoryBarrier);
   }
 
-} // namespace vk
+} // namespace vkhlf

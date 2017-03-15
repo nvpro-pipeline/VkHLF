@@ -34,6 +34,7 @@
 #include <vkhlf/PipelineLayout.h>
 #include <vkhlf/Sampler.h>
 #include <vkhlf/Types.h>
+#include <map>
 
 namespace vkhlf
 {

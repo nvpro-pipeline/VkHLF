@@ -70,7 +70,7 @@ namespace vkhlf {
     private:
         vk::Extent2D                              m_extent;
         std::shared_ptr<Swapchain>                m_swapchain;
-        uint32_t                                  m_swapchainIndex = 0; // current swapchain index
+        uint32_t                                  m_swapchainIndex; // current swapchain index
         std::vector<std::shared_ptr<Image>>       m_colorImages;
         std::vector<std::shared_ptr<ImageView>>   m_colorViews;
         std::shared_ptr<Image>                    m_depthImage;

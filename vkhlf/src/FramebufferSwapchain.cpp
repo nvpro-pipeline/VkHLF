@@ -45,6 +45,7 @@ namespace vkhlf {
         std::shared_ptr<Allocator> const& swapchainAllocator,
         std::shared_ptr<Allocator> const& imageAllocator,
         std::shared_ptr<Allocator> const& imageViewAllocator)
+      : m_swapchainIndex(0)
     {
         vk::SurfaceCapabilitiesKHR surfaceCapabilities = device->get<PhysicalDevice>()->getSurfaceCapabilities(surface);
         assert(surfaceCapabilities.currentExtent.width != -1);

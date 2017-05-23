@@ -112,7 +112,7 @@ namespace vkhlf
     }
 
     vk::DeviceCreateInfo createInfo({}, vkhlf::checked_cast<uint32_t>(queueCIs.size()), queueCIs.data(), vkhlf::checked_cast<uint32_t>(layers.size()), layers.data(),
-      vkhlf::checked_cast<uint32_t>(extensions.size()), extensions.data());
+      vkhlf::checked_cast<uint32_t>(extensions.size()), extensions.data(), &enabledFeatures);
     m_device = static_cast<vk::PhysicalDevice>(*get<PhysicalDevice>()).createDevice(createInfo, *get<Allocator>());
 
     for (auto const& createInfo : queueCreateInfos)

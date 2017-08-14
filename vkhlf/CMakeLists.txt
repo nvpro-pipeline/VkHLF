@@ -145,7 +145,7 @@ target_include_directories(VkHLF
 
 target_link_libraries( VkHLF
   ${OPENGL_gl_LIBRARY}
-  "$ENV{VK_SDK_PATH}/Bin/vulkan-1.lib"
+  "$ENV{VK_SDK_PATH}/Lib/vulkan-1.lib"
   glslang
   OGLCompiler
   OSDependent

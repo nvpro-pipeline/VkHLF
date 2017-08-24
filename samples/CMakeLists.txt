@@ -1,9 +1,10 @@
 cmake_minimum_required(VERSION 2.8)
-cmake_policy(SET CMP0020 OLD)
 
 SET( BUILD_VKCPP_SAMPLES ON  CACHE BOOL "Build the VkCpp based samples" )
 
 if( BUILD_VKCPP_SAMPLES )
+  cmake_policy(SET CMP0020 OLD)
+
   FILE (GLOB linkunits ${CMAKE_CURRENT_SOURCE_DIR}/*)
 
   FOREACH( linkunit ${linkunits} )

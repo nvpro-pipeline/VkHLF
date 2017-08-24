@@ -34,11 +34,15 @@ set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/CMake")
 #GLFW3 doesn't add the Vulkan include directories by default. Add them before.
 include_directories($ENV{VK_SDK_PATH}/include)
 
-option(GLFW_BUILD_EXAMPLES "Build the GLFW example programs" OFF)
-option(GLFW_BUILD_TESTS "Build the GLFW test programs" OFF)
-option(GLFW_BUILD_DOCS "Build the GLFW documentation" OFF)
-option(GLFW_INSTALL "Generate installation target" OFF)
-add_subdirectory(3rdparty/glfw)
+option( BUILD_VKCPP_GLFW "Build GLFW" ON)
+
+if( BUILD_VKCPP_GLFW )
+  option(GLFW_BUILD_EXAMPLES "Build the GLFW example programs" OFF)
+  option(GLFW_BUILD_TESTS "Build the GLFW test programs" OFF)
+  option(GLFW_BUILD_DOCS "Build the GLFW documentation" OFF)
+  option(GLFW_INSTALL "Generate installation target" OFF)
+  add_subdirectory(3rdparty/glfw)
+endif()
 
 #add glslang
 option(ENABLE_GLSLANG_BINARIES "Enable GLSLang Binaries" OFF)

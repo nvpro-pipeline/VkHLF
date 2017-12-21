@@ -98,7 +98,6 @@ endif()
 
 set(VK_3RDPARTY_PATH "${CMAKE_CURRENT_SOURCE_DIR}/3rdParty" CACHE STRING "CkSpp 3rdParty path")
 set(VK_BINARY_PATH "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${VK_CONFIG}")
-message( "VK_BINARY_PATH = ${VK_BINARY_PATH}" )
 
 # some useful macros
 MACRO(ADD_TARGET_PROPERTIES _target _name)

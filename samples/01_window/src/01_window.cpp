@@ -111,15 +111,20 @@ Window::Window(char const * title, int width, int height)
   assert(instance->getPhysicalDeviceCount() != 0);
   for (size_t index = 0; index < instance->getPhysicalDeviceCount(); ++index)
   {
-      if (glfwGetPhysicalDevicePresentationSupport(static_cast<vk::Instance>(*instance), static_cast<vk::PhysicalDevice>(*instance->getPhysicalDevice(index)), 0))
-      {
-          physicalDevice = instance->getPhysicalDevice(index);
-          break;
-      }
+    // need to get the QueueFamilyProperties before asking for presentation support !
+    std::shared_ptr<vkhlf::PhysicalDevice> pd = instance->getPhysicalDevice(index);
+    std::vector<vk::QueueFamilyProperties> properties = pd->getQueueFamilyProperties();
+    assert(!properties.empty());
+
+    if (glfwGetPhysicalDevicePresentationSupport(static_cast<vk::Instance>(*instance), static_cast<vk::PhysicalDevice>(*pd), 0))
+    {
+      physicalDevice = pd;
+      break;
+    }
   }
   if (!physicalDevice)
   {
-      throw std::runtime_error("Failed to find a device with presentation support");
+    throw std::runtime_error("Failed to find a device with presentation support");
   }
 
   m_surface = instance->createSurface(m_window.get());

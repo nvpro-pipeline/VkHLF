@@ -111,7 +111,7 @@ VkHLFSampleWindow::VkHLFSampleWindow(char const * title, int width, int height)
   m_depthFormat = vk::Format::eD24UnormS8Uint;
 
   // Create a new device with the VK_KHR_SWAPCHAIN_EXTENSION enabled.
-  m_device = m_physicalDevice->createDevice(vkhlf::DeviceQueueCreateInfo(m_queueFamilyIndex, 0.0f), nullptr, { VK_KHR_SWAPCHAIN_EXTENSION_NAME });
+  m_device = m_physicalDevice->createDevice(vkhlf::DeviceQueueCreateInfo(m_queueFamilyIndex, 0.0f), nullptr, { VK_KHR_SWAPCHAIN_EXTENSION_NAME }, m_physicalDevice->getFeatures());
 
   m_graphicsQueue = m_device->getQueue(m_queueFamilyIndex, 0);
 

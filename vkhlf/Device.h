@@ -158,6 +158,7 @@ namespace vkhlf
                                                         vk::SurfaceTransformFlagBitsKHR preTransform, vk::CompositeAlphaFlagBitsKHR compositeAlpha, vk::PresentModeKHR presentMode, bool clipped,
                                                         std::shared_ptr<Swapchain> const& oldSwapchain = nullptr, std::shared_ptr<Allocator> const& allocator = nullptr);
 
+      VKHLF_API vk::PhysicalDeviceFeatures const&      getEnabledFeatures() const;
       VKHLF_API PFN_vkVoidFunction                     getProcAddress(std::string const& name) const;
       VKHLF_API std::shared_ptr<Queue>                 getQueue(uint32_t familyIndex, uint32_t queueIndex);
       VKHLF_API size_t                                 getQueueCount(uint32_t familyIndex) const;
@@ -178,6 +179,7 @@ namespace vkhlf
                           vk::ArrayProxy<const std::string> enabledExtensionNames, vk::PhysicalDeviceFeatures const& enabledFeatures);
 
       vk::Device                                                     m_device;
+      vk::PhysicalDeviceFeatures                                     m_enabledFeatures;
       std::map<uint32_t, std::vector<std::unique_ptr<vkhlf::Queue>>> m_queues; // key is queueFamilyIndex
   };
 

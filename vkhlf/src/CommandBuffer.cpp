@@ -653,6 +653,8 @@ namespace vkhlf
 
   static vk::AccessFlags determineAccessFlags(vk::ImageLayout layout)
   {
+    assert((layout == vk::ImageLayout::eUndefined) || (layout == vk::ImageLayout::eGeneral) || (layout == vk::ImageLayout::eColorAttachmentOptimal) || (layout == vk::ImageLayout::eDepthStencilAttachmentOptimal) || (layout == vk::ImageLayout::eDepthStencilReadOnlyOptimal) || (layout == vk::ImageLayout::eShaderReadOnlyOptimal) || (layout == vk::ImageLayout::eTransferSrcOptimal) || (layout == vk::ImageLayout::eTransferDstOptimal) || (layout == vk::ImageLayout::ePreinitialized));
+
     vk::AccessFlags accessFlags;
     switch (layout)
     {
@@ -680,22 +682,86 @@ namespace vkhlf
       // for all other cases: keep accessFlags == 0
       case vk::ImageLayout::eUndefined:
       case vk::ImageLayout::eGeneral:
-      case vk::ImageLayout::ePresentSrcKHR:
+        break;
       default:
+        assert(false);
         break;
     }
     return accessFlags;
+  }
+
+  static vk::PipelineStageFlags determineStageFlags(vk::AccessFlags accessFlags, vk::PhysicalDeviceFeatures const& features)
+  {
+    assert(!(accessFlags & ~(vk::AccessFlagBits::eIndirectCommandRead | vk::AccessFlagBits::eIndexRead | vk::AccessFlagBits::eVertexAttributeRead | vk::AccessFlagBits::eUniformRead | vk::AccessFlagBits::eInputAttachmentRead | vk::AccessFlagBits::eShaderRead | vk::AccessFlagBits::eShaderWrite | vk::AccessFlagBits::eColorAttachmentRead | vk::AccessFlagBits::eColorAttachmentWrite | vk::AccessFlagBits::eDepthStencilAttachmentRead | vk::AccessFlagBits::eDepthStencilAttachmentWrite | vk::AccessFlagBits::eTransferRead | vk::AccessFlagBits::eTransferWrite | vk::AccessFlagBits::eHostRead | vk::AccessFlagBits::eHostWrite | vk::AccessFlagBits::eMemoryRead | vk::AccessFlagBits::eMemoryWrite)));
+
+    vk::PipelineStageFlags stageFlags;
+    if (!accessFlags)
+    {
+      stageFlags = vk::PipelineStageFlagBits::eTopOfPipe;   // get some default for no access flags
+    }
+    else
+    {
+      if (accessFlags & vk::AccessFlagBits::eIndirectCommandRead)
+      {
+        stageFlags |= vk::PipelineStageFlagBits::eDrawIndirect;
+      }
+      if (accessFlags & (vk::AccessFlagBits::eIndexRead | vk::AccessFlagBits::eVertexAttributeRead))
+      {
+        stageFlags |= vk::PipelineStageFlagBits::eVertexInput;
+      }
+      if (accessFlags & (vk::AccessFlagBits::eUniformRead | vk::AccessFlagBits::eShaderRead | vk::AccessFlagBits::eShaderWrite))
+      {
+        stageFlags |= vk::PipelineStageFlagBits::eVertexShader | vk::PipelineStageFlagBits::eFragmentShader | vk::PipelineStageFlagBits::eComputeShader;
+        if (features.geometryShader)
+        {
+          stageFlags |= vk::PipelineStageFlagBits::eGeometryShader;
+        }
+        if (features.tessellationShader)
+        {
+          stageFlags |= vk::PipelineStageFlagBits::eTessellationControlShader | vk::PipelineStageFlagBits::eTessellationEvaluationShader;
+        }
+      }
+      if (accessFlags & vk::AccessFlagBits::eInputAttachmentRead)
+      {
+        stageFlags |= vk::PipelineStageFlagBits::eFragmentShader;
+      }
+      if (accessFlags & (vk::AccessFlagBits::eColorAttachmentRead | vk::AccessFlagBits::eColorAttachmentWrite))
+      {
+        stageFlags |= vk::PipelineStageFlagBits::eColorAttachmentOutput;
+      }
+      if (accessFlags & (vk::AccessFlagBits::eDepthStencilAttachmentRead | vk::AccessFlagBits::eDepthStencilAttachmentWrite))
+      {
+        stageFlags |= vk::PipelineStageFlagBits::eEarlyFragmentTests | vk::PipelineStageFlagBits::eLateFragmentTests;
+      }
+      if (accessFlags & (vk::AccessFlagBits::eTransferRead | vk::AccessFlagBits::eTransferWrite))
+      {
+        stageFlags |= vk::PipelineStageFlagBits::eTransfer;
+      }
+      if (accessFlags & (vk::AccessFlagBits::eHostRead | vk::AccessFlagBits::eHostWrite))
+      {
+        stageFlags |= vk::PipelineStageFlagBits::eHost;
+      }
+      if (accessFlags & (vk::AccessFlagBits::eMemoryRead | vk::AccessFlagBits::eMemoryWrite))
+      {
+        // N/A
+        assert(false);
+      }
+    }
+    return stageFlags;
   }
 
   void setImageLayout(std::shared_ptr<vkhlf::CommandBuffer> const& commandBuffer, std::shared_ptr<vkhlf::Image> const& image, vk::ImageSubresourceRange const& subresourceRange, vk::ImageLayout oldImageLayout, vk::ImageLayout newImageLayout)
   {
     vk::AccessFlags srcAccessMask = determineAccessFlags(oldImageLayout);
     vk::AccessFlags dstAccessMask = determineAccessFlags(newImageLayout);
+    vk::PhysicalDeviceFeatures features = commandBuffer->get<vkhlf::CommandPool>()->get<vkhlf::Device>()->getEnabledFeatures();
+    vk::PipelineStageFlags srcStageMask = determineStageFlags(srcAccessMask, features);
+    vk::PipelineStageFlags dstStageMask = determineStageFlags(dstAccessMask, features);
 
     vkhlf::ImageMemoryBarrier imageMemoryBarrier(srcAccessMask, dstAccessMask, oldImageLayout, newImageLayout, VK_QUEUE_FAMILY_IGNORED, VK_QUEUE_FAMILY_IGNORED, image, subresourceRange);
 
     assert(commandBuffer->isRecording());
-    commandBuffer->pipelineBarrier(vk::PipelineStageFlagBits::eTopOfPipe, vk::PipelineStageFlagBits::eTopOfPipe, {}, nullptr, nullptr, imageMemoryBarrier);
+    commandBuffer->pipelineBarrier(srcStageMask, dstStageMask, {}, nullptr, nullptr, imageMemoryBarrier);
   }
 
 } // namespace vkhlf

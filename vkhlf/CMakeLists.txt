@@ -153,12 +153,17 @@ target_include_directories(VkHLF
   INTERFACE  "${PROJECT_SOURCE_DIR}"
 )
 
-target_link_libraries( VkHLF
+target_link_libraries(VkHLF
   ${OPENGL_gl_LIBRARY}
   ${VulkanLib}
   glslang
   OGLCompiler
   OSDependent
-  HLSL
   SPIRV
 )
+
+option(ENABLE_HLSL "Enables HLSL input support" OFF)
+
+if (ENABLE_HLSL)
+  target_link_libraries(VkHLF HLSL)
+endif()

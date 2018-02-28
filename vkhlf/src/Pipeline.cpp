@@ -31,6 +31,7 @@
 #include <vkhlf/PipelineCache.h>
 #include <vkhlf/RenderPass.h>
 #include <array>
+#include <math.h>
 
 namespace vkhlf
 {

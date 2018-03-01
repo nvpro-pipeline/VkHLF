@@ -70,6 +70,12 @@ namespace vkhlf
 #ifdef VK_USE_PLATFORM_XCB_KHR
              std::shared_ptr<Surface>             createSurface(xcb_connection_t * connection, xcb_window_t window, std::shared_ptr<Allocator> const& allocator = nullptr);
 #endif
+#ifdef VK_USE_PLATFORM_MACOS_MVK
+             std::shared_ptr<Surface>             createSurface(/*NSView*/ void * view, int, std::shared_ptr<Allocator> const& allocator = nullptr);
+#endif
+#ifdef VK_USE_PLATFORM_IOS_MVK
+             std::shared_ptr<Surface>             createSurface(/*UIView*/ void * view, int, std::shared_ptr<Allocator> const& allocator = nullptr);
+#endif
 #ifdef GLFW_INCLUDE_VULKAN
              std::shared_ptr<Surface>             createSurface(GLFWwindow * window, std::shared_ptr<Allocator> const& allocator = nullptr);
 #endif
@@ -134,6 +140,20 @@ namespace vkhlf
   {
     return std::make_shared<Surface>(shared_from_this(), m_instance.createXcbSurfaceKHR(vk::XcbSurfaceCreateInfoKHR({}, connection, window), *allocator), allocator);
   }
+#endif
+
+#ifdef VK_USE_PLATFORM_MACOS_MVK
+    inline std::shared_ptr<Surface> Instance::createSurface(void * view, int, std::shared_ptr<Allocator> const& allocator)
+    {
+        return std::make_shared<Surface>(shared_from_this(), m_instance.createMacOSSurfaceMVK(vk::MacOSSurfaceCreateInfoMVK({}, view), *allocator), allocator);
+    }
+#endif
+
+#ifdef VK_USE_PLATFORM_IOS_MVK
+    inline std::shared_ptr<Surface> Instance::createSurface(void * view, int, std::shared_ptr<Allocator> const& allocator)
+    {
+        return std::make_shared<Surface>(shared_from_this(), m_instance.createIOSSurfaceMVK(vk::IOSSurfaceCreateInfoMVK({}, view), *allocator), allocator);
+    }
 #endif
 
 #ifdef GLFW_INCLUDE_VULKAN

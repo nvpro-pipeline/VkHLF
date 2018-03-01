@@ -26,6 +26,7 @@
 */
 
 
+#include <vkhlf/Config.h>
 #include <vkhlf/Display.h>
 #include <vkhlf/DisplayMode.h>
 
@@ -36,18 +37,24 @@ namespace vkhlf
     , m_displayMode(displayMode)
   {}
 
+#if !defined(VK_OS_MAC) && !defined(VK_OS_IOS)
   DisplayMode::DisplayMode(std::shared_ptr<Display> const& display, vk::Extent2D const& visibleRegion, uint32_t refreshRate)
     : Reference(display)
   {
     vk::DisplayModeCreateInfoKHR createInfo({}, vk::DisplayModeParametersKHR(visibleRegion, refreshRate));
     m_displayMode = static_cast<vk::PhysicalDevice>(*get<Display>()->get<PhysicalDevice>()).createDisplayModeKHR(static_cast<vk::DisplayKHR>(*get<Display>()), createInfo);
   }
+#endif
 
   DisplayMode::~DisplayMode()
   {}    // NOTE: there's no destroyDisplayModeKHR !!
 
   vk::DisplayPlaneCapabilitiesKHR DisplayMode::getPlaneCapabilities(uint32_t planeIndex) const
   {
+#if !defined(VK_OS_MAC) && !defined(VK_OS_IOS)
     return static_cast<vk::PhysicalDevice>(*get<Display>()->get<PhysicalDevice>()).getDisplayPlaneCapabilitiesKHR(m_displayMode, planeIndex);
+#else
+    return vk::DisplayPlaneCapabilitiesKHR();
+#endif
   }
 } // namespace vk

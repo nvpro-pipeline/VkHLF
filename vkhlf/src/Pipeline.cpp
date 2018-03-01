@@ -31,6 +31,7 @@
 #include <vkhlf/PipelineCache.h>
 #include <vkhlf/RenderPass.h>
 #include <array>
+#include <cmath>
 
 namespace vkhlf
 {
@@ -95,7 +96,7 @@ namespace vkhlf
     , alphaToCoverageEnable(alphaToCoverageEnable_)
     , alphaToOneEnable(alphaToOneEnable_)
   {
-    assert(sampleMasks.empty() || (ceil(static_cast<uint32_t>(sampleShadingEnable) / 32) <= sampleMasks.size()));
+    assert(sampleMasks.empty() || (std::ceil(static_cast<uint32_t>(sampleShadingEnable) / 32) <= sampleMasks.size()));
   }
 
   PipelineMultisampleStateCreateInfo::PipelineMultisampleStateCreateInfo(PipelineMultisampleStateCreateInfo const& rhs)

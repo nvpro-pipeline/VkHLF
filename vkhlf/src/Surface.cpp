@@ -26,6 +26,7 @@
 */
 
 
+#include <vkhlf/Config.h>
 #include <vkhlf/Device.h>
 #include <vkhlf/DisplayMode.h>
 #include <vkhlf/Fence.h>
@@ -41,6 +42,7 @@ namespace vkhlf
     , m_surface(surface)
   {}
 
+#if !defined(VK_OS_MAC) && !defined(VK_OS_IOS)
   Surface::Surface(std::shared_ptr<Instance> const& instance, std::shared_ptr<DisplayMode> const& displayMode, uint32_t planeIndex, uint32_t planeStackIndex,
                    vk::SurfaceTransformFlagBitsKHR transform, float globalAlpha, vk::DisplayPlaneAlphaFlagBitsKHR alphaMode, vk::Extent2D const& imageExtent,
                    std::shared_ptr<Allocator> const& allocator)
@@ -49,6 +51,7 @@ namespace vkhlf
     vk::DisplaySurfaceCreateInfoKHR createInfo({}, static_cast<vk::DisplayModeKHR>(*displayMode), planeIndex, planeStackIndex, transform, globalAlpha, alphaMode, imageExtent);
     m_surface = static_cast<vk::Instance>(*get<Instance>()).createDisplayPlaneSurfaceKHR(createInfo, *get<Allocator>());
   }
+#endif
 
   Surface::~Surface()
   {

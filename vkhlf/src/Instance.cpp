@@ -26,6 +26,7 @@
 */
 
 
+#include <vkhlf/Config.h>
 #include <vkhlf/DebugReportCallback.h>
 #include <vkhlf/Instance.h>
 #include <vkhlf/PhysicalDevice.h>
@@ -106,11 +107,13 @@ namespace vkhlf
       assert(std::find_if(extensionProperties.begin(), extensionProperties.end(), [ee](vk::ExtensionProperties const& ep) { return ee == ep.extensionName; }) != extensionProperties.end());
     }
 
+# if !defined(VK_OS_MAC) && !defined(VK_OS_IOS)
     if (std::find(enabledExtensions.begin(), enabledExtensions.end(), VK_EXT_DEBUG_REPORT_EXTENSION_NAME) == enabledExtensions.end())
     {
       assert(std::find_if(extensionProperties.begin(), extensionProperties.end(), [](vk::ExtensionProperties const& lp) { return strcmp(lp.extensionName, VK_EXT_DEBUG_REPORT_EXTENSION_NAME) == 0; }) != extensionProperties.end());
       extensions.push_back(VK_EXT_DEBUG_REPORT_EXTENSION_NAME);
     }
+# endif
 #endif
 
     vk::InstanceCreateInfo instanceInfo({}, &applicationInfo, vkhlf::checked_cast<uint32_t>(layers.size()), layers.data(), vkhlf::checked_cast<uint32_t>(extensions.size()), extensions.data());

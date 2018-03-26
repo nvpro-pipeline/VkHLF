@@ -25,6 +25,7 @@
 * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#pragma once
 
 #include <vkhlf/Device.h>
 #include <vkhlf/Swapchain.h>

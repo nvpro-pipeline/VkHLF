@@ -44,6 +44,19 @@
 # define _stricmp strcasecmp
 #endif
 
+#if defined(__APPLE__)
+#define VK_POSIX
+
+#include <TargetConditionals.h>
+# if defined(TARGET_OS_IOS)
+#  define VK_OS_IOS
+# elif defined(TARGET_OS_MAC)
+#  define VK_OS_MAC
+#endif
+
+#include <MoltenVK/mvk_vulkan.h>
+
+#endif
 
 #if defined(VK_OS_WINDOWS)
 // microsoft specific storage-class defines

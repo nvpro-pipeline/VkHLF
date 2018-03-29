@@ -68,8 +68,8 @@ namespace vkhlf
   }
 
   std::shared_ptr<Device> Device::create(std::shared_ptr<PhysicalDevice> const& physicalDevice, vk::ArrayProxy<const DeviceQueueCreateInfo> queueCreateInfos,
-    vk::ArrayProxy<const std::string> enabledLayerNames, vk::ArrayProxy<const std::string> enabledExtensionNames,
-    vk::PhysicalDeviceFeatures const& enabledFeatures, std::shared_ptr<Allocator> const& allocator)
+                                         vk::ArrayProxy<const std::string> enabledLayerNames, vk::ArrayProxy<const std::string> enabledExtensionNames,
+                                         vk::PhysicalDeviceFeatures const& enabledFeatures, std::shared_ptr<Allocator> const& allocator)
   {
     std::shared_ptr<Device> device(new Device(physicalDevice, allocator));
     device->init(queueCreateInfos, enabledLayerNames, enabledExtensionNames, enabledFeatures);
@@ -111,8 +111,9 @@ namespace vkhlf
       extensions.push_back(s.c_str());
     }
 
+    m_enabledFeatures = enabledFeatures;
     vk::DeviceCreateInfo createInfo({}, vkhlf::checked_cast<uint32_t>(queueCIs.size()), queueCIs.data(), vkhlf::checked_cast<uint32_t>(layers.size()), layers.data(),
-      vkhlf::checked_cast<uint32_t>(extensions.size()), extensions.data());
+                                    vkhlf::checked_cast<uint32_t>(extensions.size()), extensions.data(), &m_enabledFeatures);
     m_device = static_cast<vk::PhysicalDevice>(*get<PhysicalDevice>()).createDevice(createInfo, *get<Allocator>());
 
     for (auto const& createInfo : queueCreateInfos)
@@ -132,6 +133,11 @@ namespace vkhlf
   {
     m_queues.clear();
     m_device.destroy(*get<Allocator>());
+  }
+
+  vk::PhysicalDeviceFeatures const& Device::getEnabledFeatures() const
+  {
+    return m_enabledFeatures;
   }
 
   PFN_vkVoidFunction Device::getProcAddress(std::string const& name) const

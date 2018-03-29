@@ -26,6 +26,7 @@
 */
 
 
+#include <vkhlf/Config.h>
 #include <vkhlf/Display.h>
 #include <vkhlf/DisplayMode.h>
 
@@ -41,7 +42,11 @@ namespace vkhlf
 
   std::vector<DisplayModeProperties> Display::getDisplayModeProperties()
   {
-    std::vector<vk::DisplayModePropertiesKHR> vkDisplayModeProperties = static_cast<vk::PhysicalDevice>(*get<PhysicalDevice>()).getDisplayModePropertiesKHR(m_display);
+    std::vector<vk::DisplayModePropertiesKHR> vkDisplayModeProperties
+#if !defined(VK_OS_MAC) && !defined(VK_OS_IOS)
+    = static_cast<vk::PhysicalDevice>(*get<PhysicalDevice>()).getDisplayModePropertiesKHR(m_display)
+#endif
+    ;
     std::vector<DisplayModeProperties> displayModeProperties;
     displayModeProperties.reserve(vkDisplayModeProperties.size());
     for (auto const& dmp : vkDisplayModeProperties)

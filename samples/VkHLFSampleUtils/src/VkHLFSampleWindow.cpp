@@ -73,15 +73,20 @@ VkHLFSampleWindow::VkHLFSampleWindow(char const * title, int width, int height)
   assert(instance->getPhysicalDeviceCount() != 0);
   for (size_t index = 0; index < instance->getPhysicalDeviceCount(); ++index)
   {
-      if (glfwGetPhysicalDevicePresentationSupport(static_cast<vk::Instance>(*instance), static_cast<vk::PhysicalDevice>(*instance->getPhysicalDevice(index)), 0))
-      {
-          m_physicalDevice = instance->getPhysicalDevice(index);
-          break;
-      }
+    // need to get the QueueFamilyProperties before asking for presentation support !
+    std::shared_ptr<vkhlf::PhysicalDevice> physicalDevice = instance->getPhysicalDevice(index);
+    std::vector<vk::QueueFamilyProperties> properties = physicalDevice->getQueueFamilyProperties();
+    assert(!properties.empty());
+
+    if (glfwGetPhysicalDevicePresentationSupport(static_cast<vk::Instance>(*instance), static_cast<vk::PhysicalDevice>(*physicalDevice), 0))
+    {
+      m_physicalDevice = physicalDevice;
+      break;
+    }
   }
   if (!m_physicalDevice)
   {
-      throw std::runtime_error("Failed to find a device with presentation support");
+    throw std::runtime_error("Failed to find a device with presentation support");
   }
 
   m_surface = instance->createSurface(m_window.get());
@@ -99,7 +104,7 @@ VkHLFSampleWindow::VkHLFSampleWindow(char const * title, int width, int height)
   m_depthFormat = vk::Format::eD24UnormS8Uint;
 
   // Create a new device with the VK_KHR_SWAPCHAIN_EXTENSION enabled.
-  m_device = m_physicalDevice->createDevice(vkhlf::DeviceQueueCreateInfo(m_queueFamilyIndex, 0.0f), nullptr, { VK_KHR_SWAPCHAIN_EXTENSION_NAME });
+  m_device = m_physicalDevice->createDevice(vkhlf::DeviceQueueCreateInfo(m_queueFamilyIndex, 0.0f), nullptr, { VK_KHR_SWAPCHAIN_EXTENSION_NAME }, m_physicalDevice->getFeatures());
 
   m_graphicsQueue = m_device->getQueue(m_queueFamilyIndex, 0);
 

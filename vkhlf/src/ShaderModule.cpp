@@ -201,8 +201,8 @@ namespace vkhlf
 
     if (!program.link(messages))
     {
-      std::string infoLog = shader.getInfoLog();
-      std::string infoDebugLog = shader.getInfoDebugLog();
+      std::string infoLog = program.getInfoLog();
+      std::string infoDebugLog = program.getInfoDebugLog();
       assert(false);
     }
 

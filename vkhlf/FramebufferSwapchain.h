@@ -25,6 +25,7 @@
 * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#pragma once
 
 #include <vkhlf/Device.h>
 #include <vkhlf/Swapchain.h>
@@ -45,7 +46,7 @@ namespace vkhlf {
             std::shared_ptr<Allocator> const& imageAllocator = nullptr,
             std::shared_ptr<Allocator> const& imageViewAllocator = nullptr);
 
-        void acquireNextFrame() { m_swapchainIndex = m_swapchain->acquireNextImage(); }
+        void acquireNextFrame(uint64_t timeout = UINT64_MAX, std::shared_ptr<Fence> const& fence = {}) { m_swapchainIndex = m_swapchain->acquireNextImage(timeout, fence); }
 
         std::shared_ptr<Framebuffer> const& getFramebuffer() const { return m_framebuffers[m_swapchainIndex]; }
 
@@ -62,9 +63,9 @@ namespace vkhlf {
         // wait for this semaphore before rendering
         std::shared_ptr<Semaphore> const&   getPresentSemaphore() const { return m_swapchain->getPresentCompleteSemaphores()[m_swapchainIndex]; }
 
-        void present(std::shared_ptr<Queue> const& queue, std::shared_ptr<Semaphore> const & waitSemaphore = {})
+        void present(std::shared_ptr<Queue> const& queue, vk::ArrayProxy<const std::shared_ptr<Semaphore>> waitSemaphores = {})
         {
-            queue->present(waitSemaphore, m_swapchain, m_swapchainIndex);
+            queue->present(waitSemaphores, m_swapchain, m_swapchainIndex);
         }
 
     private:

@@ -103,7 +103,7 @@ namespace vkhlf
       VKHLF_API void fillBuffer(std::shared_ptr<vkhlf::Buffer> const& dstBuffer, vk::DeviceSize dstOffset, vk::DeviceSize fillSize, uint32_t data);
       VKHLF_API void nextSubpass(vk::SubpassContents contents);
       VKHLF_API void pipelineBarrier(vk::PipelineStageFlags srcStageMask, vk::PipelineStageFlags destStageMask, vk::DependencyFlags dependencyFlags, vk::ArrayProxy<const vk::MemoryBarrier> barriers, vk::ArrayProxy<const vk::BufferMemoryBarrier> bufferMemoryBarriers, vk::ArrayProxy<const ImageMemoryBarrier> imageMemoryBarriers);
-      VKHLF_API void pushConstants(vk::PipelineLayout layout, vk::ShaderStageFlags stageFlags, uint32_t start, vk::ArrayProxy<const uint8_t> values);
+      template <typename T> void pushConstants(vk::PipelineLayout layout, vk::ShaderStageFlags stageFlags, uint32_t start, vk::ArrayProxy<const T> values);
       VKHLF_API void reset(vk::CommandBufferResetFlags flags = {});
       VKHLF_API void resetEvent(std::shared_ptr<vkhlf::Event> const& event, vk::PipelineStageFlags stageMask);
       VKHLF_API void resetQueryPool(std::shared_ptr<vkhlf::QueryPool> const& queryPool, uint32_t startQuery, uint32_t queryCount);
@@ -160,7 +160,7 @@ namespace vkhlf
       };
 
     private:
-      vk::CommandBuffer                                m_commandBuffer;
+      vk::CommandBuffer                                  m_commandBuffer;
       std::shared_ptr<vkhlf::RenderPass>                 m_renderPass;
       std::shared_ptr<vkhlf::Framebuffer>                m_framebuffer;
       std::vector<std::shared_ptr<vkhlf::CommandBuffer>> m_secondaryCommandBuffers;    // this belongs into a PrimaryCommandBuffer only
@@ -169,7 +169,7 @@ namespace vkhlf
       std::vector<::vk::DescriptorSet> m_bindDescriptorSets;
       std::vector<::vk::Buffer>        m_bindVertexBuffers;
 
-      std::shared_ptr<ResourceTracker>       m_resourceTracker;
+      std::shared_ptr<ResourceTracker>  m_resourceTracker;
 #if !defined(NDEBUG)
       vk::CommandBufferUsageFlags       m_flags;
       bool                              m_inRenderPass;
@@ -183,8 +183,8 @@ namespace vkhlf
 #endif
   };
 
-  VKHLF_API void setImageLayout(std::shared_ptr<vkhlf::CommandBuffer> const& commandBuffer, std::shared_ptr<vkhlf::Image> const& image, vk::ImageAspectFlags aspectMask, vk::ImageLayout oldImageLayout,
-                             vk::ImageLayout newImageLayout);
+  VKHLF_API void setImageLayout(std::shared_ptr<vkhlf::CommandBuffer> const& commandBuffer, std::shared_ptr<vkhlf::Image> const& image, vk::ImageSubresourceRange const& subresourceRange, vk::ImageLayout oldImageLayout, vk::ImageLayout newImageLayout);
+  VKHLF_API void setImageLayout(std::shared_ptr<vkhlf::CommandBuffer> const& commandBuffer, std::shared_ptr<vkhlf::Image> const& image, vk::ImageAspectFlags aspectMask, vk::ImageLayout oldImageLayout, vk::ImageLayout newImageLayout);
 
 
   inline std::vector<std::shared_ptr<vkhlf::CommandBuffer>> const& CommandBuffer::getSecondaryCommandBuffers() const
@@ -198,10 +198,22 @@ namespace vkhlf
   }
 
   template <typename T>
+  void CommandBuffer::pushConstants(vk::PipelineLayout layout, vk::ShaderStageFlags stageFlags, uint32_t start, vk::ArrayProxy<const T> values)
+  {
+    m_commandBuffer.pushConstants<T>(layout, stageFlags, start, values);
+  }
+
+  template <typename T>
   inline void CommandBuffer::updateBuffer(std::shared_ptr<vkhlf::Buffer> const & destBuffer, vk::DeviceSize destOffset, vk::ArrayProxy<const T> data)
   {
     m_resourceTracker->track(destBuffer);
     m_commandBuffer.updateBuffer<T>(*destBuffer, destOffset, data);
+  }
+
+
+  inline void setImageLayout(std::shared_ptr<vkhlf::CommandBuffer> const& commandBuffer, std::shared_ptr<vkhlf::Image> const& image, vk::ImageAspectFlags aspectMask, vk::ImageLayout oldImageLayout, vk::ImageLayout newImageLayout)
+  {
+    setImageLayout(commandBuffer, image, vk::ImageSubresourceRange(aspectMask, 0, 1, 0, 1), oldImageLayout, newImageLayout);
   }
 
 } // namespace vk

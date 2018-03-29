@@ -145,10 +145,15 @@ target_include_directories(VkHLF
 
 target_link_libraries( VkHLF
   ${OPENGL_gl_LIBRARY}
-  vulkan
   glslang
   OGLCompiler
   OSDependent
   HLSL
   SPIRV
 )
+
+if(UNIX)
+  target_link_libraries(VkHLF vulkan)
+else()
+  target_link_libraries(VkHLF "$ENV{VK_SDK_PATH}/Lib/vulkan-1.lib")
+endif()

@@ -26,6 +26,7 @@
 */
 
 
+#include <vkhlf/Config.h>
 #include <vkhlf/Device.h>
 #include <vkhlf/Display.h>
 #include <vkhlf/PhysicalDevice.h>
@@ -79,7 +80,11 @@ namespace vkhlf
 
   std::vector<DisplayPlaneProperties> PhysicalDevice::getDisplayPlaneProperties()
   {
-    std::vector<vk::DisplayPlanePropertiesKHR> vkDisplayPlaneProperties = m_physicalDevice.getDisplayPlanePropertiesKHR();
+    std::vector<vk::DisplayPlanePropertiesKHR> vkDisplayPlaneProperties
+#if !defined(VK_OS_MAC) && !defined(VK_OS_IOS)
+    = m_physicalDevice.getDisplayPlanePropertiesKHR()
+#endif
+    ;
     std::vector<DisplayPlaneProperties> displayPlaneProperties;
     displayPlaneProperties.reserve(vkDisplayPlaneProperties.size());
     for (auto const& dpp : vkDisplayPlaneProperties)
@@ -91,7 +96,11 @@ namespace vkhlf
 
   std::vector<DisplayProperties> PhysicalDevice::getDisplayProperties()
   {
-    std::vector<vk::DisplayPropertiesKHR> vkDisplayProperties = m_physicalDevice.getDisplayPropertiesKHR();
+    std::vector<vk::DisplayPropertiesKHR> vkDisplayProperties
+#if !defined(VK_OS_MAC) && !defined(VK_OS_IOS)
+    = m_physicalDevice.getDisplayPropertiesKHR()
+#endif
+    ;
     std::vector<DisplayProperties> displayProperties;
     displayProperties.reserve(vkDisplayProperties.size());
     for (auto const& dp : vkDisplayProperties)
@@ -169,7 +178,11 @@ namespace vkhlf
 
   std::vector<std::shared_ptr<Display>> PhysicalDevice::getSupportedDisplays(uint32_t planeIndex)
   {
-    std::vector<vk::DisplayKHR> vkDisplays = m_physicalDevice.getDisplayPlaneSupportedDisplaysKHR(planeIndex);
+    std::vector<vk::DisplayKHR> vkDisplays
+#if !defined(VK_OS_MAC) && !defined(VK_OS_IOS)
+    = m_physicalDevice.getDisplayPlaneSupportedDisplaysKHR(planeIndex)
+#endif    
+    ;
     std::vector<std::shared_ptr<Display>> displays;
     displays.reserve(vkDisplays.size());
     for (auto const& d : vkDisplays)

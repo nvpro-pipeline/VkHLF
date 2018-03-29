@@ -43,15 +43,24 @@ public:
   Window(char const* title, int width, int height);
   ~Window();
 
+private:
+  enum class Operation
+  {
+    None,
+    Orbit,
+    Pan,
+  };
 
-protected:
-  virtual void doPaint() override;
-  virtual void doResize(int width, int height) override;
+private:
   virtual void cursorPosEvent(double xPos, double yPos) override;
+          void doAction(int action, Operation operation);
+          void doOrbit(double xPos, double yPos);
+  virtual void doPaint() override;
+          void doPan(double xPos, double yPos);
+  virtual void doResize(int width, int height) override;
   virtual void keyEvent(int key, int scancode, int action, int mods) override;
   virtual void mouseButtonEvent(int button, int action, int mods) override;
-
-  void updateCameraInformation(int width, int height);
+          void updateCameraInformation(int width, int height);
 
 private:
   std::shared_ptr<vkhlf::DescriptorSet>         m_descriptorSet;
@@ -65,15 +74,21 @@ private:
   std::shared_ptr<vkhlf::Buffer>                m_vertexBuffer;
 
   float                                       m_fovy;
+  glm::vec3                                   m_eyeDir;
   glm::vec3                                   m_eyePos;
   glm::vec3                                   m_centerPos;
   glm::vec3                                   m_upDir;
   glm::mat4                                   m_view;
-  bool                                        m_tracking;
-  double                                      m_trackStartX, m_trackStartY;
-  glm::vec3                                   m_trackStartEyePos;
-  glm::vec3                                   m_trackStartCenterPos;
+  Operation                                   m_operation;
+  glm::vec3                                   m_operationStartCenterPos;
+  glm::vec3                                   m_operationStartEyePos;
+  glm::vec2                                   m_operationStartPosition;
+  glm::vec3                                   m_operationStartUpDir;
+  glm::mat4                                   m_operationStartView;
   glm::vec2                                   m_trackFactor;
+  glm::vec3                                   m_xAxis;
+  glm::vec3                                   m_yAxis;
+  glm::vec3                                   m_zAxis;
 };
 
 static const char *vertShaderText =
@@ -158,13 +173,12 @@ static const Vertex vertexData[] = {
 
 Window::Window(char const* title, int width, int height)
   : VkHLFSampleWindow(title, width, height)
-  , m_tracking(false)
+  , m_operation(Operation::None)
   , m_eyePos(5.0f, 3.0f, 10.0f) // Camera is at (5,3,10), in World Space
   , m_centerPos(0, 0, 0)        // and looks at the origin
   , m_upDir(0, -1, 0)          // Head is up (set to 0,-1,0 to look upside-down)
   , m_view(glm::lookAt(m_eyePos, m_centerPos, m_upDir))
 {
-
   // VkHLF has mostly transparent support for suballocators. Create two device memory heaps, one with a chunk size of 64kb and another one with a chunk size of 128kb
   m_deviceMemoryAllocatorBuffer.reset(new vkhlf::DeviceMemoryAllocator(getDevice(), 64 * 1024, nullptr));
   m_deviceMemoryAllocatorImage.reset(new vkhlf::DeviceMemoryAllocator(getDevice(), 128 * 1024, nullptr));
@@ -178,7 +192,7 @@ Window::Window(char const* title, int width, int height)
                                               vk::MemoryPropertyFlagBits::eDeviceLocal, m_deviceMemoryAllocatorBuffer);
 
   // create a small 8x8 RGBA8 texture with a simple color pattern
-  // 1. init image
+  // init image
   const vk::Format format = vk::Format::eR8G8B8A8Unorm;
   vk::FormatProperties imageFormatProperties = getPhysicalDevice()->getFormatProperties(format);
   assert((imageFormatProperties.linearTilingFeatures & vk::FormatFeatureFlagBits::eSampledImage) || (imageFormatProperties.optimalTilingFeatures & vk::FormatFeatureFlagBits::eSampledImage));
@@ -213,7 +227,7 @@ Window::Window(char const* title, int width, int height)
 
   m_textureImageView = image->createImageView(vk::ImageViewType::e2D, format);
 
-  // 2. init sampler
+  // init sampler
   m_textureSampler = getDevice()->createSampler(vk::Filter::eNearest, vk::Filter::eNearest, vk::SamplerMipmapMode::eNearest, vk::SamplerAddressMode::eClampToEdge, vk::SamplerAddressMode::eClampToEdge,
                                              vk::SamplerAddressMode::eClampToEdge, 0.0f, false, 0.0f, false, vk::CompareOp::eNever, 0.0f, 0.0f, vk::BorderColor::eFloatOpaqueWhite, false);
 
@@ -277,71 +291,101 @@ Window::~Window()
 
 void Window::cursorPosEvent(double xPos, double yPos)
 {
-  if (m_tracking)
+  if (m_operation != Operation::None)
   {
-    glm::vec3 delta = - m_trackFactor.x * float(xPos - m_trackStartX) * glm::vec3(m_view[0]) + m_trackFactor.y * float(yPos - m_trackStartY) * glm::vec3(m_view[1]);
-    m_eyePos = m_trackStartEyePos + delta;
-    m_centerPos = m_trackStartCenterPos + delta;
+    if ((static_cast<float>(xPos) != m_operationStartPosition.x) || (static_cast<float>(yPos) != m_operationStartPosition.y))
+    {
+      switch (m_operation)
+      {
+        case Operation::Orbit:
+          doOrbit(xPos, yPos);
+          break;
+        case Operation::Pan:
+          doPan(xPos, yPos);
+          break;
+        default:
+          assert(false);
+          break;
+      }
+    }
+    else
+    {
+      // restore starting position and direction
+      m_eyePos = m_operationStartEyePos;
+      m_upDir = m_operationStartUpDir;
+    }
     paint();
   }
 }
 
-void Window::updateCameraInformation(int width, int height)
+void Window::doAction(int action, Operation operation)
 {
-  m_fovy = glm::radians(45.0f);
-  if (getFramebufferSwapchain()->getExtent().width > getFramebufferSwapchain()->getExtent().height)
+  assert(operation != Operation::None);
+  switch (action)
   {
-    m_fovy *= static_cast<float>(getFramebufferSwapchain()->getExtent().height) / static_cast<float>(getFramebufferSwapchain()->getExtent().width);
-  }
-
-  float fovx = m_fovy * getFramebufferSwapchain()->getExtent().width / getFramebufferSwapchain()->getExtent().height;
-  float d = glm::length(m_eyePos - m_centerPos);
-  m_trackFactor = glm::vec2(d * tan(fovx) / getFramebufferSwapchain()->getExtent().width, d * tan(m_fovy) / getFramebufferSwapchain()->getExtent().height);
-}
-
-void Window::doResize(int width, int height)
-{
-  assert((0 <= width) && (0 <= height));
-  updateCameraInformation(width, height);
-}
-
-void Window::keyEvent(int key, int scancode, int action, int mods)
-{
-  switch (key)
-  {
-    case GLFW_KEY_ESCAPE:
-      switch (action)
+    case GLFW_RELEASE:
+      if (m_operation == operation)
       {
-        case GLFW_PRESS:
-          glfwSetWindowShouldClose(getWindow(), GLFW_TRUE);
-          break;
-        default:
-          break;
+        // stop the operation
+        m_operation = Operation::None;
       }
       break;
-    default:
+    case GLFW_PRESS:
+      if (m_operation == Operation::None)
+      {
+        // start the operation
+        m_operation = operation;
+
+        // store the starting data for that operation
+        double x, y;
+        glfwGetCursorPos(getWindow(), &x, &y);
+        m_operationStartPosition = glm::vec2(x, y);
+        m_operationStartEyePos = m_eyePos;
+        m_operationStartCenterPos = m_centerPos;
+        m_operationStartUpDir = m_upDir;
+        m_operationStartView = m_view;
+
+        m_eyeDir = m_operationStartEyePos - m_operationStartCenterPos;
+        m_zAxis = glm::normalize(m_eyeDir);
+        m_yAxis = m_operationStartUpDir;
+        assert(glm::dot(m_yAxis, m_zAxis) < std::numeric_limits<float>::epsilon());
+        m_xAxis = glm::cross(m_yAxis, m_zAxis);
+      }
       break;
+    case GLFW_REPEAT:
+    default:
+      assert(false);
   }
 }
 
-void Window::mouseButtonEvent(int button, int action, int mods)
+static float projectOntoSphere(glm::vec2 const& p, float tbSize)
 {
-  if (button == GLFW_MOUSE_BUTTON_LEFT)
+  float d = glm::length(p);
+  if (d < tbSize / sqrt(2.0f))
   {
-    if (action == GLFW_PRESS)
-    {
-      assert(!m_tracking);
-      glfwGetCursorPos(getWindow(), &m_trackStartX, &m_trackStartY);
-      m_tracking = true;
-      m_trackStartEyePos = m_eyePos;
-      m_trackStartCenterPos = m_centerPos;
-    }
-    else
-    {
-      assert(m_tracking);
-      m_tracking = false;
-    }
+    return sqrt(tbSize * tbSize - d * d);   // inside sphere
   }
+  else
+  {
+    float t = tbSize / sqrt(2.0f);
+    return t * t / d;                       // on hyperbola
+  }
+}
+
+void Window::doOrbit(double xPos, double yPos)
+{
+  glm::vec2 p(2.0f * (m_operationStartPosition.x - static_cast<float>(xPos)) / getFramebufferSwapchain()->getExtent().height,
+              2.0f * (static_cast<float>(yPos) - m_operationStartPosition.y) / getFramebufferSwapchain()->getExtent().width);
+
+  const float tbSize = 0.8f;
+  glm::vec3 newZAxis = glm::normalize(p.x * m_xAxis + p.y * m_yAxis + projectOntoSphere(p, tbSize) * m_zAxis);
+
+  glm::vec3 rotationAxis = glm::normalize(glm::cross(m_zAxis, newZAxis));
+  float rotationAngle = acos(glm::dot(m_zAxis, newZAxis));
+  glm::mat4 rotationMatrix = glm::rotate(glm::mat4(), rotationAngle, rotationAxis);
+
+  m_eyePos = m_operationStartCenterPos + glm::length(m_eyeDir) * newZAxis;
+  m_upDir = glm::vec3(rotationMatrix * glm::vec4(m_operationStartUpDir, 0.0f));
 }
 
 void Window::doPaint()
@@ -378,6 +422,66 @@ void Window::doPaint()
   commandBuffer->end();
 
   getGraphicsQueue()->submit(vkhlf::SubmitInfo{ { getFramebufferSwapchain()->getPresentSemaphore() },{ vk::PipelineStageFlagBits::eColorAttachmentOutput }, commandBuffer, getRenderCompleteSemaphore() });
+}
+
+void Window::doPan(double xPos, double yPos)
+{
+  glm::vec3 delta = -m_trackFactor.x * (static_cast<float>(xPos) - m_operationStartPosition.x) * m_xAxis + m_trackFactor.y * (static_cast<float>(yPos) - m_operationStartPosition.y) * m_yAxis;
+  m_eyePos = m_operationStartEyePos + delta;
+  m_centerPos = m_operationStartCenterPos + delta;
+}
+
+void Window::doResize(int width, int height)
+{
+  assert((0 <= width) && (0 <= height));
+  updateCameraInformation(width, height);
+}
+
+void Window::keyEvent(int key, int scancode, int action, int mods)
+{
+  switch (key)
+  {
+    case GLFW_KEY_ESCAPE:
+      switch (action)
+      {
+        case GLFW_PRESS:
+          glfwSetWindowShouldClose(getWindow(), GLFW_TRUE);
+          break;
+        default:
+          break;
+      }
+      break;
+    default:
+      break;
+  }
+}
+
+void Window::mouseButtonEvent(int button, int action, int mods)
+{
+  switch (button)
+  {
+    case GLFW_MOUSE_BUTTON_LEFT:
+      doAction(action, Operation::Orbit);
+      break;
+    case GLFW_MOUSE_BUTTON_RIGHT:
+      doAction(action, Operation::Pan);
+      break;
+    default:
+      assert(false);
+  }
+}
+
+void Window::updateCameraInformation(int width, int height)
+{
+  m_fovy = glm::radians(45.0f);
+  if (getFramebufferSwapchain()->getExtent().width > getFramebufferSwapchain()->getExtent().height)
+  {
+    m_fovy *= static_cast<float>(getFramebufferSwapchain()->getExtent().height) / static_cast<float>(getFramebufferSwapchain()->getExtent().width);
+  }
+
+  float fovx = m_fovy * getFramebufferSwapchain()->getExtent().width / getFramebufferSwapchain()->getExtent().height;
+  float d = glm::length(m_eyePos - m_centerPos);
+  m_trackFactor = glm::vec2(d * tan(fovx) / getFramebufferSwapchain()->getExtent().width, d * tan(m_fovy) / getFramebufferSwapchain()->getExtent().height);
 }
 
 void errorCallback(int error, const char* description)

@@ -47,6 +47,7 @@ private:
   enum class Operation
   {
     None,
+    Dolly,
     Orbit,
     Pan,
   };
@@ -54,6 +55,7 @@ private:
 private:
   virtual void cursorPosEvent(double xPos, double yPos) override;
           void doAction(int action, Operation operation);
+          void doDolly(double xPos, double yPos);
           void doOrbit(double xPos, double yPos);
   virtual void doPaint() override;
           void doPan(double xPos, double yPos);
@@ -297,6 +299,9 @@ void Window::cursorPosEvent(double xPos, double yPos)
     {
       switch (m_operation)
       {
+        case Operation::Dolly:
+          doDolly(xPos, yPos);
+          break;
         case Operation::Orbit:
           doOrbit(xPos, yPos);
           break;
@@ -370,6 +375,13 @@ static float projectOntoSphere(glm::vec2 const& p, float tbSize)
     float t = tbSize / sqrt(2.0f);
     return t * t / d;                       // on hyperbola
   }
+}
+
+void Window::doDolly(double xPos, double yPos)
+{
+  glm::vec3 delta = m_trackFactor.y * (static_cast<float>(yPos) - m_operationStartPosition.y) * m_eyeDir;
+  m_eyePos = m_operationStartEyePos + delta;
+  m_centerPos = m_operationStartCenterPos + delta;
 }
 
 void Window::doOrbit(double xPos, double yPos)
@@ -465,6 +477,9 @@ void Window::mouseButtonEvent(int button, int action, int mods)
       break;
     case GLFW_MOUSE_BUTTON_RIGHT:
       doAction(action, Operation::Pan);
+      break;
+    case GLFW_MOUSE_BUTTON_MIDDLE:
+      doAction(action, Operation::Dolly);
       break;
     default:
       assert(false);

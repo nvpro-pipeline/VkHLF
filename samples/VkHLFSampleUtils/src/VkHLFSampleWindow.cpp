@@ -139,6 +139,9 @@ VkHLFSampleWindow::VkHLFSampleWindow(char const * title, int width, int height)
 
   m_renderCompleteSemaphore = m_device->createSemaphore();
 
+  // create a command pool for command buffer allocation
+  m_commandPool = m_device->createCommandPool(vk::CommandPoolCreateFlagBits::eResetCommandBuffer, m_queueFamilyIndex);
+
   // create Framebuffer & Swapchain
   resize(width, height);
 
@@ -151,6 +154,7 @@ VkHLFSampleWindow::VkHLFSampleWindow(char const * title, int width, int height)
     glfwSetKeyCallback(m_window.get(), VkHLFSampleWindow::keyCallback);
     glfwSetMouseButtonCallback(m_window.get(), VkHLFSampleWindow::mouseButtonCallback);
     glfwSetCursorPosCallback(m_window.get(), VkHLFSampleWindow::cursorPosCallback);
+    glfwSetScrollCallback(m_window.get(), VkHLFSampleWindow::scrollCallback);
   }
 }
 
@@ -184,9 +188,7 @@ void VkHLFSampleWindow::paint()
 
 void VkHLFSampleWindow::doPaint()
 {
-  // create a command pool for command buffer allocation
-  std::shared_ptr<vkhlf::CommandPool> commandPool = m_device->createCommandPool(vk::CommandPoolCreateFlagBits::eResetCommandBuffer, m_queueFamilyIndex);
-  std::shared_ptr<vkhlf::CommandBuffer> commandBuffer = commandPool->allocateCommandBuffer();
+  std::shared_ptr<vkhlf::CommandBuffer> commandBuffer = m_commandPool->allocateCommandBuffer();
 
   std::array<float, 4> ccv = { 0.462745f, 0.72549f, 0.0f };
   commandBuffer->begin();
@@ -198,18 +200,6 @@ void VkHLFSampleWindow::doPaint()
   commandBuffer->end();
 
   m_graphicsQueue->submit(vkhlf::SubmitInfo{ { m_framebufferSwapchain->getPresentSemaphore() },{ vk::PipelineStageFlagBits::eColorAttachmentOutput }, commandBuffer, m_renderCompleteSemaphore });
-}
-
-void VkHLFSampleWindow::paintCallback(GLFWwindow * window)
-{
-  VkHLFSampleWindow * wd = reinterpret_cast<VkHLFSampleWindow*>(glfwGetWindowUserPointer(window));
-  wd->paint();
-}
-
-void VkHLFSampleWindow::resizeCallback(GLFWwindow *window, int width, int height)
-{
-    VkHLFSampleWindow * wd = reinterpret_cast<VkHLFSampleWindow*>(glfwGetWindowUserPointer(window));
-    wd->resize(width, height);
 }
 
 void VkHLFSampleWindow::cursorPosCallback(GLFWwindow * window, double xPos, double yPos)
@@ -224,10 +214,28 @@ void VkHLFSampleWindow::keyCallback(GLFWwindow* window, int key, int scancode, i
   wd->keyEvent(key, scancode, action, mods);
 }
 
+void VkHLFSampleWindow::paintCallback(GLFWwindow * window)
+{
+  VkHLFSampleWindow * wd = reinterpret_cast<VkHLFSampleWindow*>(glfwGetWindowUserPointer(window));
+  wd->paint();
+}
+
 void VkHLFSampleWindow::mouseButtonCallback(GLFWwindow * window, int button, int action, int mods)
 {
   VkHLFSampleWindow * wd = reinterpret_cast<VkHLFSampleWindow*>(glfwGetWindowUserPointer(window));
   wd->mouseButtonEvent(button, action, mods);
+}
+
+void VkHLFSampleWindow::resizeCallback(GLFWwindow *window, int width, int height)
+{
+  VkHLFSampleWindow * wd = reinterpret_cast<VkHLFSampleWindow*>(glfwGetWindowUserPointer(window));
+  wd->resize(width, height);
+}
+
+void VkHLFSampleWindow::scrollCallback(GLFWwindow * window, double xOffset, double yOffset)
+{
+  VkHLFSampleWindow * wd = reinterpret_cast<VkHLFSampleWindow*>(glfwGetWindowUserPointer(window));
+  wd->scrollEvent(yOffset);
 }
 
 void VkHLFSampleWindow::cursorPosEvent(double xPos, double yPos)
@@ -242,3 +250,6 @@ void VkHLFSampleWindow::mouseButtonEvent(int button, int action, int mods)
 {
 }
 
+void VkHLFSampleWindow::scrollEvent(double offset)
+{
+}

@@ -55,6 +55,7 @@ protected:
   virtual void cursorPosEvent(double xPos, double yPos);
   virtual void keyEvent(int key, int scancode, int action, int mods);
   virtual void mouseButtonEvent(int button, int action, int mods);
+  virtual void scrollEvent(double offset);
 
   std::shared_ptr<vkhlf::PhysicalDevice>       const &getPhysicalDevice()          const { return m_physicalDevice; }
   std::shared_ptr<vkhlf::Device>               const &getDevice()                  const { return m_device; }
@@ -68,11 +69,12 @@ protected:
   uint32_t                                            getQueueFamilyIndex()        const { return m_queueFamilyIndex; }
 
 private:
-  static void paintCallback(GLFWwindow *window);
-  static void resizeCallback(GLFWwindow *window, int width, int height);
   static void cursorPosCallback(GLFWwindow * window, double xPos, double yPos);
   static void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
+  static void paintCallback(GLFWwindow *window);
   static void mouseButtonCallback(GLFWwindow * window, int button, int action, int mods);
+  static void resizeCallback(GLFWwindow *window, int width, int height);
+  static void scrollCallback(GLFWwindow * window, double xOffset, double yOffset);
 
 private:
   std::unique_ptr<GLFWwindow, void(*)(GLFWwindow*)> m_window;
@@ -89,5 +91,5 @@ private:
   vk::Format                                   m_depthFormat;
   std::shared_ptr<vkhlf::Semaphore>            m_renderCompleteSemaphore;
   uint32_t                                     m_queueFamilyIndex;
-
+  std::shared_ptr<vkhlf::CommandPool>          m_commandPool;
 };

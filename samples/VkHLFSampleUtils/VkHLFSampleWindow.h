@@ -57,6 +57,7 @@ protected:
   virtual void mouseButtonEvent(int button, int action, int mods);
   virtual void scrollEvent(double offset);
 
+  std::shared_ptr<vkhlf::CommandPool>          const &getCommandPool()             const { return m_commandPool; }
   std::shared_ptr<vkhlf::PhysicalDevice>       const &getPhysicalDevice()          const { return m_physicalDevice; }
   std::shared_ptr<vkhlf::Device>               const &getDevice()                  const { return m_device; }
   std::unique_ptr<vkhlf::FramebufferSwapchain> const &getFramebufferSwapchain()    const { return m_framebufferSwapchain; }

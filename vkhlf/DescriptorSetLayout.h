@@ -42,9 +42,9 @@ namespace vkhlf
     VKHLF_API DescriptorSetLayoutBinding(DescriptorSetLayoutBinding const& rhs);
     VKHLF_API DescriptorSetLayoutBinding & operator=(DescriptorSetLayoutBinding const& rhs);
 
-    uint32_t                                    binding;
-    vk::DescriptorType                          descriptorType;
-    vk::ShaderStageFlags                        stageFlags;
+    uint32_t                                      binding;
+    vk::DescriptorType                            descriptorType;
+    vk::ShaderStageFlags                          stageFlags;
     std::vector<std::shared_ptr<vkhlf::Sampler>>  immutableSamplers;
   };
 
@@ -53,6 +53,8 @@ namespace vkhlf
     public:
       VKHLF_API DescriptorSetLayout(std::shared_ptr<Device> const & device, vk::ArrayProxy<const DescriptorSetLayoutBinding> bindings, std::shared_ptr<Allocator> const& allocator);
       VKHLF_API ~DescriptorSetLayout();
+
+      std::vector<DescriptorSetLayoutBinding> const& getBindings() { return m_bindings; }
 
       VKHLF_API operator vk::DescriptorSetLayout() const;
 

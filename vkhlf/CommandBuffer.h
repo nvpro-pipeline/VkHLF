@@ -198,7 +198,7 @@ namespace vkhlf
   }
 
   template <typename T>
-  void CommandBuffer::pushConstants(vk::PipelineLayout layout, vk::ShaderStageFlags stageFlags, uint32_t start, vk::ArrayProxy<const T> values)
+  inline void CommandBuffer::pushConstants(vk::PipelineLayout layout, vk::ShaderStageFlags stageFlags, uint32_t start, vk::ArrayProxy<const T> values)
   {
     m_commandBuffer.pushConstants<T>(layout, stageFlags, start, values);
   }

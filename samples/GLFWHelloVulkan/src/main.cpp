@@ -62,7 +62,8 @@ private:
   virtual void doResize(int width, int height) override;
   virtual void keyEvent(int key, int scancode, int action, int mods) override;
   virtual void mouseButtonEvent(int button, int action, int mods) override;
-          void updateCameraInformation(int width, int height);
+  virtual void scrollEvent(double offset) override;
+          void updateCameraInformation();
 
 private:
   std::shared_ptr<vkhlf::DescriptorSet>         m_descriptorSet;
@@ -88,6 +89,7 @@ private:
   glm::vec3                                   m_operationStartUpDir;
   glm::mat4                                   m_operationStartView;
   glm::vec2                                   m_trackFactor;
+  float                                       m_viewAngle;
   glm::vec3                                   m_xAxis;
   glm::vec3                                   m_yAxis;
   glm::vec3                                   m_zAxis;
@@ -180,6 +182,7 @@ Window::Window(char const* title, int width, int height)
   , m_centerPos(0, 0, 0)        // and looks at the origin
   , m_upDir(0, -1, 0)          // Head is up (set to 0,-1,0 to look upside-down)
   , m_view(glm::lookAt(m_eyePos, m_centerPos, m_upDir))
+  , m_viewAngle(45.0f)
 {
   // VkHLF has mostly transparent support for suballocators. Create two device memory heaps, one with a chunk size of 64kb and another one with a chunk size of 128kb
   m_deviceMemoryAllocatorBuffer.reset(new vkhlf::DeviceMemoryAllocator(getDevice(), 64 * 1024, nullptr));
@@ -282,7 +285,7 @@ Window::Window(char const* title, int width, int height)
   m_pipeline = getDevice()->createGraphicsPipeline(pipelineCache, {}, {vertexStage, fragmentStage}, vertexInput, assembly, nullptr, viewport, rasterization, multisample, depthStencil, colorBlend, dynamic,
                                                    m_pipelineLayout, getRenderPass());
   // update 
-  updateCameraInformation(width, height);
+  updateCameraInformation();
 }
 
 Window::~Window()
@@ -446,7 +449,7 @@ void Window::doPan(double xPos, double yPos)
 void Window::doResize(int width, int height)
 {
   assert((0 <= width) && (0 <= height));
-  updateCameraInformation(width, height);
+  updateCameraInformation();
 }
 
 void Window::keyEvent(int key, int scancode, int action, int mods)
@@ -486,9 +489,16 @@ void Window::mouseButtonEvent(int button, int action, int mods)
   }
 }
 
-void Window::updateCameraInformation(int width, int height)
+void Window::scrollEvent(double offset)
 {
-  m_fovy = glm::radians(45.0f);
+  m_viewAngle = glm::clamp(m_viewAngle + float(offset), 1.0f, 90.0f);
+  updateCameraInformation();
+  paint();
+}
+
+void Window::updateCameraInformation()
+{
+  m_fovy = glm::radians(m_viewAngle);
   if (getFramebufferSwapchain()->getExtent().width > getFramebufferSwapchain()->getExtent().height)
   {
     m_fovy *= static_cast<float>(getFramebufferSwapchain()->getExtent().height) / static_cast<float>(getFramebufferSwapchain()->getExtent().width);

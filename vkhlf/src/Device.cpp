@@ -316,29 +316,32 @@ namespace vkhlf
     return std::make_shared<RenderPass>(shared_from_this(), attachments, subpasses, dependencies, allocator);
   }
 
-  std::shared_ptr<vkhlf::Pipeline> Device::createComputePipeline(std::shared_ptr<vkhlf::PipelineCache> const & pipelineCache, vk::PipelineCreateFlags flags, PipelineShaderStageCreateInfo const& stage,
-                                                               std::shared_ptr<PipelineLayout> const& layout, std::shared_ptr<Pipeline> const& basePipelineHandle, int32_t basePipelineIndex,
-                                                               std::shared_ptr<Allocator> const& allocator)
+  std::shared_ptr<vkhlf::ComputePipeline> Device::createComputePipeline(std::shared_ptr<vkhlf::PipelineCache> const & pipelineCache, vk::PipelineCreateFlags flags,
+                                                                        PipelineShaderStageCreateInfo const& stage, std::shared_ptr<PipelineLayout> const& layout,
+                                                                        std::shared_ptr<Pipeline> const& basePipeline, int32_t basePipelineIndex,
+                                                                        std::shared_ptr<Allocator> const& allocator)
   {
-    return std::make_shared<ComputePipeline>(shared_from_this(), pipelineCache, flags, stage, layout, basePipelineHandle, basePipelineIndex, allocator);
+    return std::make_shared<ComputePipeline>(shared_from_this(), pipelineCache, flags, stage, layout, basePipeline, basePipelineIndex, allocator);
   }
 
-  std::shared_ptr<vkhlf::Pipeline> Device::createGraphicsPipeline(std::shared_ptr<PipelineCache> const& pipelineCache, vk::PipelineCreateFlags flags,
-                                                                vk::ArrayProxy<const PipelineShaderStageCreateInfo> stages, vk::Optional<const PipelineVertexInputStateCreateInfo> vertexInputState,
-                                                                vk::Optional<const vk::PipelineInputAssemblyStateCreateInfo> inputAssemblyState,
-                                                                vk::Optional<const vk::PipelineTessellationStateCreateInfo> tessellationState,
-                                                                vk::Optional<const PipelineViewportStateCreateInfo> viewportState,
-                                                                vk::Optional<const vk::PipelineRasterizationStateCreateInfo> rasterizationState,
-                                                                vk::Optional<const PipelineMultisampleStateCreateInfo> multisampleState,
-                                                                vk::Optional<const vk::PipelineDepthStencilStateCreateInfo> depthStencilState,
-                                                                vk::Optional<const PipelineColorBlendStateCreateInfo> colorBlendState,
-                                                                vk::Optional<const PipelineDynamicStateCreateInfo> dynamicState, std::shared_ptr<PipelineLayout> const& pipelineLayout,
-                                                                std::shared_ptr<RenderPass> const& renderPass, uint32_t subpass, std::shared_ptr<Pipeline> const& basePipelineHandle,
-                                                                uint32_t basePipelineIndex, std::shared_ptr<Allocator> const& allocator)
+  std::shared_ptr<vkhlf::GraphicsPipeline> Device::createGraphicsPipeline(std::shared_ptr<PipelineCache> const& pipelineCache, vk::PipelineCreateFlags flags,
+                                                                          vk::ArrayProxy<const PipelineShaderStageCreateInfo> stages,
+                                                                          vk::Optional<const PipelineVertexInputStateCreateInfo> vertexInputState,
+                                                                          vk::Optional<const vk::PipelineInputAssemblyStateCreateInfo> inputAssemblyState,
+                                                                          vk::Optional<const vk::PipelineTessellationStateCreateInfo> tessellationState,
+                                                                          vk::Optional<const PipelineViewportStateCreateInfo> viewportState,
+                                                                          vk::Optional<const vk::PipelineRasterizationStateCreateInfo> rasterizationState,
+                                                                          vk::Optional<const PipelineMultisampleStateCreateInfo> multisampleState,
+                                                                          vk::Optional<const vk::PipelineDepthStencilStateCreateInfo> depthStencilState,
+                                                                          vk::Optional<const PipelineColorBlendStateCreateInfo> colorBlendState,
+                                                                          vk::Optional<const PipelineDynamicStateCreateInfo> dynamicState,
+                                                                          std::shared_ptr<PipelineLayout> const& pipelineLayout, std::shared_ptr<RenderPass> const& renderPass,
+                                                                          uint32_t subpass, std::shared_ptr<Pipeline> const& basePipeline, uint32_t basePipelineIndex,
+                                                                          std::shared_ptr<Allocator> const& allocator)
   {
-    return std::make_shared<GraphicsPipeline>(shared_from_this(), pipelineCache, flags, stages, vertexInputState, inputAssemblyState, tessellationState, viewportState, rasterizationState,
-                                              multisampleState, depthStencilState, colorBlendState, dynamicState, pipelineLayout, renderPass, subpass, basePipelineHandle, basePipelineIndex,
-                                              allocator);
+    return std::make_shared<GraphicsPipeline>(shared_from_this(), pipelineCache, flags, stages, vertexInputState, inputAssemblyState, tessellationState, viewportState,
+                                              rasterizationState, multisampleState, depthStencilState, colorBlendState, dynamicState, pipelineLayout, renderPass, subpass, basePipeline,
+                                              basePipelineIndex, allocator);
   }
 
   std::shared_ptr<vkhlf::PipelineCache> Device::createPipelineCache(size_t initialSize, void const* initialData, std::shared_ptr<Allocator> const& allocator)

@@ -110,22 +110,24 @@ namespace vkhlf
       VKHLF_API std::shared_ptr<QueryPool> createOcclusionQuery(uint32_t entryCount, std::shared_ptr<Allocator> const& allocator = nullptr);
 
       // create Pipeline
-      VKHLF_API std::shared_ptr<Pipeline> createComputePipeline(std::shared_ptr<PipelineCache> const & pipelineCache, vk::PipelineCreateFlags flags, PipelineShaderStageCreateInfo const& stage,
-                                                             std::shared_ptr<PipelineLayout> const& layout, std::shared_ptr<Pipeline> const& basePipelineHandle, int32_t basePipelineIndex,
-                                                             std::shared_ptr<Allocator> const& allocator = nullptr);
-      VKHLF_API std::shared_ptr<Pipeline> createGraphicsPipeline(std::shared_ptr<PipelineCache> const& pipelineCache, vk::PipelineCreateFlags flags, vk::ArrayProxy<const PipelineShaderStageCreateInfo> stages,
-                                                              vk::Optional<const PipelineVertexInputStateCreateInfo> vertexInputState,
-                                                              vk::Optional<const vk::PipelineInputAssemblyStateCreateInfo> inputAssemblyState,
-                                                              vk::Optional<const vk::PipelineTessellationStateCreateInfo> tessellationState,
-                                                              vk::Optional<const PipelineViewportStateCreateInfo> viewportState,
-                                                              vk::Optional<const vk::PipelineRasterizationStateCreateInfo> rasterizationState,
-                                                              vk::Optional<const PipelineMultisampleStateCreateInfo> multisampleState,
-                                                              vk::Optional<const vk::PipelineDepthStencilStateCreateInfo> depthStencilState,
-                                                              vk::Optional<const PipelineColorBlendStateCreateInfo> colorBlendState,
-                                                              vk::Optional<const PipelineDynamicStateCreateInfo> dynamicState,
-                                                              std::shared_ptr<PipelineLayout> const& pipelineLayout, std::shared_ptr<RenderPass> const& renderPass, uint32_t subpass = 0,
-                                                              std::shared_ptr<Pipeline> const& basePipelineHandle = {}, uint32_t basePipelineIndex = 0,
-                                                              std::shared_ptr<Allocator> const& allocator = nullptr);
+      VKHLF_API std::shared_ptr<ComputePipeline> createComputePipeline(std::shared_ptr<PipelineCache> const & pipelineCache, vk::PipelineCreateFlags flags,
+                                                                       PipelineShaderStageCreateInfo const& stage, std::shared_ptr<PipelineLayout> const& pipelineLayout,
+                                                                       std::shared_ptr<Pipeline> const& basePipeline, int32_t basePipelineIndex,
+                                                                       std::shared_ptr<Allocator> const& allocator = nullptr);
+      VKHLF_API std::shared_ptr<GraphicsPipeline> createGraphicsPipeline(std::shared_ptr<PipelineCache> const& pipelineCache, vk::PipelineCreateFlags flags,
+                                                                         vk::ArrayProxy<const PipelineShaderStageCreateInfo> stages,
+                                                                         vk::Optional<const PipelineVertexInputStateCreateInfo> vertexInputState,
+                                                                         vk::Optional<const vk::PipelineInputAssemblyStateCreateInfo> inputAssemblyState,
+                                                                         vk::Optional<const vk::PipelineTessellationStateCreateInfo> tessellationState,
+                                                                         vk::Optional<const PipelineViewportStateCreateInfo> viewportState,
+                                                                         vk::Optional<const vk::PipelineRasterizationStateCreateInfo> rasterizationState,
+                                                                         vk::Optional<const PipelineMultisampleStateCreateInfo> multisampleState,
+                                                                         vk::Optional<const vk::PipelineDepthStencilStateCreateInfo> depthStencilState,
+                                                                         vk::Optional<const PipelineColorBlendStateCreateInfo> colorBlendState,
+                                                                         vk::Optional<const PipelineDynamicStateCreateInfo> dynamicState,
+                                                                         std::shared_ptr<PipelineLayout> const& pipelineLayout, std::shared_ptr<RenderPass> const& renderPass,
+                                                                         uint32_t subpass = 0, std::shared_ptr<Pipeline> const& basePipeline = {}, uint32_t basePipelineIndex = 0,
+                                                                         std::shared_ptr<Allocator> const& allocator = nullptr);
 
       // create PipelineCache
       VKHLF_API std::shared_ptr<PipelineCache> createPipelineCache(size_t initialSize, void const* initialData, std::shared_ptr<Allocator> const& allocator = nullptr);

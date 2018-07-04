@@ -146,9 +146,18 @@ target_include_directories(VkHLF
 target_link_libraries( VkHLF
   ${OPENGL_gl_LIBRARY}
   "$ENV{VK_SDK_PATH}/Lib/vulkan-1.lib"
-  glslang
-  OGLCompiler
-  OSDependent
-  HLSL
-  SPIRV
+  debug "$ENV{VK_SDK_PATH}/glslang/build/glslang/Debug/glslangd.lib"
+  debug "$ENV{VK_SDK_PATH}/glslang/build/glslang/OSDependent/Windows/Debug/OSDependentd.lib"
+  debug "$ENV{VK_SDK_PATH}/glslang/build/OGLCompilersDLL/Debug/OGLCompilerd.lib"
+  debug "$ENV{VK_SDK_PATH}/glslang/build/hlsl/Debug/HLSLd.lib"
+  debug "$ENV{VK_SDK_PATH}/glslang/build/SPIRV/Debug/SPIRVd.lib"
+  debug "$ENV{VK_SDK_PATH}/spirv-tools/build/source/Debug/SPIRV-Tools.lib"
+  debug "$ENV{VK_SDK_PATH}/spirv-tools/build/source/opt/Debug/SPIRV-Tools-opt.lib"
+  optimized "$ENV{VK_SDK_PATH}/glslang/build/glslang/Release/glslang.lib"
+  optimized "$ENV{VK_SDK_PATH}/glslang/build/glslang/OSDependent/Windows/Release/OSDependent.lib"
+  optimized "$ENV{VK_SDK_PATH}/glslang/build/OGLCompilersDLL/Release/OGLCompiler.lib"
+  optimized "$ENV{VK_SDK_PATH}/glslang/build/hlsl/Release/HLSL.lib"
+  optimized "$ENV{VK_SDK_PATH}/glslang/build/SPIRV/Release/SPIRV.lib"
+  optimized "$ENV{VK_SDK_PATH}/spirv-tools/build/source/Release/SPIRV-Tools.lib"
+  optimized "$ENV{VK_SDK_PATH}/spirv-tools/build/source/opt/Release/SPIRV-Tools-opt.lib"
 )

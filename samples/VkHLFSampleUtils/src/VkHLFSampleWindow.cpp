@@ -110,8 +110,18 @@ VkHLFSampleWindow::VkHLFSampleWindow(char const * title, int width, int height)
   m_colorFormat = ((surfaceFormats.size() == 1) && (surfaceFormats[0].format == vk::Format::eUndefined)) ? vk::Format::eB8G8R8A8Unorm : surfaceFormats[0].format;
   m_depthFormat = vk::Format::eD24UnormS8Uint;
 
-  // Create a new device with the VK_KHR_SWAPCHAIN_EXTENSION enabled.
-  m_device = m_physicalDevice->createDevice(vkhlf::DeviceQueueCreateInfo(m_queueFamilyIndex, 0.0f), nullptr, { VK_KHR_SWAPCHAIN_EXTENSION_NAME }, m_physicalDevice->getFeatures());
+  // Create a new device with the VK_KHR_SWAPCHAIN_EXTENSION enabled;
+  // if VK_NV_GLSL_SHADER_EXTENSION_NAME is exported, enable that as well.
+  std::vector<vk::ExtensionProperties> deviceExtensions = m_physicalDevice->getExtensionProperties(std::string());
+  assert(std::find_if(deviceExtensions.begin(), deviceExtensions.end(), [](auto const& e) { return strcmp(e.extensionName, VK_KHR_SWAPCHAIN_EXTENSION_NAME ) == 0; }) != deviceExtensions.end());
+  enabledExtensions.clear();;
+  enabledExtensions.push_back(VK_KHR_SWAPCHAIN_EXTENSION_NAME);
+  if (std::find_if(deviceExtensions.begin(), deviceExtensions.end(), [](auto const& e) { return strcmp(e.extensionName, VK_NV_GLSL_SHADER_EXTENSION_NAME ) == 0; }) != deviceExtensions.end())
+  {
+    enabledExtensions.push_back(VK_NV_GLSL_SHADER_EXTENSION_NAME);
+  }
+
+  m_device = m_physicalDevice->createDevice(vkhlf::DeviceQueueCreateInfo(m_queueFamilyIndex, 0.0f), nullptr, enabledExtensions, m_physicalDevice->getFeatures());
 
   m_graphicsQueue = m_device->getQueue(m_queueFamilyIndex, 0);
 

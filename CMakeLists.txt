@@ -42,7 +42,6 @@ add_subdirectory(3rdparty/glfw)
 
 #add glslang
 option(ENABLE_GLSLANG_BINARIES "Enable GLSLang Binaries" OFF)
-add_subdirectory(3rdparty/glslang)
 
 
 set(ENV{GLFW_ROOT} ${CMAKE_CURRENT_SOURCE_DIR}/3rdParty/glfw)

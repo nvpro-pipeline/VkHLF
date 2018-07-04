@@ -153,6 +153,7 @@ namespace vkhlf
 
       // create ShaderModule
       VKHLF_API std::shared_ptr<ShaderModule> createShaderModule(vk::ArrayProxy<const uint32_t> code, std::shared_ptr<Allocator> const& allocator = nullptr);
+      VKHLF_API std::shared_ptr<ShaderModule> createShaderModule(std::string const& glslCode, std::shared_ptr<Allocator> const& allocator = nullptr);
 
       // create Swapchain
       VKHLF_API std::shared_ptr<Swapchain> createSwapchain(std::shared_ptr<Surface> const& surface, uint32_t minImageCount, vk::Format imageFormat, vk::Extent2D const& extent, uint32_t imageArrayLayers,

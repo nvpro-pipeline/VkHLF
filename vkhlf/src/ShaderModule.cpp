@@ -28,16 +28,23 @@
 
 #include <vkhlf/Device.h>
 #include <vkhlf/ShaderModule.h>
-#include <glslang/SPIRV/GlslangToSpv.h>
+#include <../glslang/SPIRV/GlslangToSpv.h>
 #include <map>
 
 namespace vkhlf
 {
 
-  ShaderModule::ShaderModule(std::shared_ptr<Device> const & device, vk::ArrayProxy<const uint32_t> code, std::shared_ptr<Allocator> const& allocator)
+  ShaderModule::ShaderModule(std::shared_ptr<Device> const& device, vk::ArrayProxy<const uint32_t> code, std::shared_ptr<Allocator> const& allocator)
     : Reference(device, allocator)
   {
     vk::ShaderModuleCreateInfo createInfo(vk::ShaderModuleCreateFlags(), 4 * code.size(), code.data());
+    m_shaderModule = static_cast<vk::Device>(*get<Device>()).createShaderModule(createInfo, *get<Allocator>());
+  }
+
+  ShaderModule::ShaderModule(std::shared_ptr<Device> const& device, std::string const& glslCode, std::shared_ptr<Allocator> const& allocator)
+    : Reference(device, allocator)
+  {
+    vk::ShaderModuleCreateInfo createInfo(vk::ShaderModuleCreateFlags(), glslCode.length(), reinterpret_cast<uint32_t const*>(glslCode.data()));
     m_shaderModule = static_cast<vk::Device>(*get<Device>()).createShaderModule(createInfo, *get<Allocator>());
   }
 
@@ -207,7 +214,7 @@ namespace vkhlf
     }
 
     std::vector<uint32_t> code;
-    glslang::GlslangToSpv(*program.getIntermediate(stageIt->second), code);
+    glslang::GlslangToSpv(*shader.getIntermediate(), code);
 
     return code;
   }

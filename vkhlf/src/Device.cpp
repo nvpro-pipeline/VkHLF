@@ -310,6 +310,11 @@ namespace vkhlf
     return std::make_shared<ShaderModule>(shared_from_this(), code, allocator);
   }
 
+  std::shared_ptr<vkhlf::ShaderModule> Device::createShaderModule(std::string const& glslCode, std::shared_ptr<Allocator> const& allocator)
+  {
+    return std::make_shared<ShaderModule>(shared_from_this(), glslCode, allocator);
+  }
+
   std::shared_ptr<vkhlf::RenderPass> Device::createRenderPass(vk::ArrayProxy<const vk::AttachmentDescription> attachments, vk::ArrayProxy<const vk::SubpassDescription> subpasses,
                                                             vk::ArrayProxy<const vk::SubpassDependency> dependencies, std::shared_ptr<Allocator> const& allocator)
   {

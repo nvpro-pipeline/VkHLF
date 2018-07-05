@@ -38,7 +38,9 @@ namespace vkhlf
   class ShaderModule : public Reference<Device, Allocator>, public std::enable_shared_from_this<ShaderModule>
   {
     public:
-      VKHLF_API ShaderModule(std::shared_ptr<Device> const & device, vk::ArrayProxy<const uint32_t> code, std::shared_ptr<Allocator> const& allocator);
+      VKHLF_API ShaderModule(std::shared_ptr<Device> const& device, vk::ArrayProxy<const uint32_t> code, std::shared_ptr<Allocator> const& allocator);
+      VKHLF_API ShaderModule(std::shared_ptr<Device> const& device, std::string const& glslCode, std::shared_ptr<Allocator> const& allocator);
+
       VKHLF_API ~ShaderModule();
 
       operator vk::ShaderModule() const { return m_shaderModule; }

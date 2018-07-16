@@ -25,12 +25,7 @@
 * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-// Windows #defines MemoryBarrier which collides with vk::MemoryBarrier
-// #undef here...
-#include <Windows.h>
-#if defined(MemoryBarrier)
-# undef MemoryBarrier
-#endif
+#include <VkHLFSampleWindow.h>
 
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
@@ -42,8 +37,6 @@
 #include <memory>
 #include <system_error>
 #include <vector>
-
-#include <VkHLFSampleWindow.h>
 
 VkHLFSampleWindow::VkHLFSampleWindow(char const * title, int width, int height)
   : m_window(nullptr, glfwDestroyWindow)

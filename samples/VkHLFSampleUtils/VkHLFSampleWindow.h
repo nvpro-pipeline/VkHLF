@@ -25,11 +25,13 @@
 * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#ifdef _MSC_VER
 // Windows #defines MemoryBarrier which collides with vk::MemoryBarrier
 // #undef here...
 #include <Windows.h>
 #if defined(MemoryBarrier)
 # undef MemoryBarrier
+#endif
 #endif
 
 #define GLFW_INCLUDE_VULKAN

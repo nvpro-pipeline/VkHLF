@@ -32,6 +32,7 @@
 #include <vkhlf/Reference.h>
 #include <vkhlf/ResourceTrackerAll.h>
 #include <vkhlf/Types.h>
+#include <map>
 #include <memory>
 #include <set>
 
@@ -131,6 +132,8 @@ namespace vkhlf
       VKHLF_API std::shared_ptr<vkhlf::Framebuffer> getFramebuffer() const { return m_framebuffer; }
 
 #if !defined(NDEBUG)
+      VKHLF_API std::shared_ptr<vkhlf::Pipeline> const& getBoundPipeline() const;
+      VKHLF_API std::map<uint32_t, std::shared_ptr<vkhlf::Buffer>> const& getBoundVertexBuffers() const;
       VKHLF_API std::shared_ptr<vkhlf::CommandBuffer> getPrimaryCommandBuffer() const;     // this belongs into a SecondaryCommandBuffer only
       VKHLF_API bool isOneTimeSubmit() const;
       VKHLF_API bool isRecording() const;
@@ -171,15 +174,18 @@ namespace vkhlf
 
       std::shared_ptr<ResourceTracker>  m_resourceTracker;
 #if !defined(NDEBUG)
-      vk::CommandBufferUsageFlags       m_flags;
-      bool                              m_inRenderPass;
-      bool                              m_isRecording;
-      bool                              m_isResetFromCommandPool;
-      vk::CommandBufferLevel            m_level;
-      vk::Bool32                        m_occlusionQueryEnable;
-      std::weak_ptr<vkhlf::CommandBuffer> m_primaryCommandBuffer;       // this belongs into a SecondayCommandBuffer only
-      QueryInfo                         m_queryInfo[VK_QUERY_TYPE_RANGE_SIZE];
-      vk::PipelineStageFlags            m_stageFlags;
+      std::shared_ptr<vkhlf::Buffer>                      m_boundIndexBuffer;
+      std::shared_ptr<vkhlf::Pipeline>                    m_boundPipeline;
+      std::map<uint32_t, std::shared_ptr<vkhlf::Buffer>>  m_boundVertexBuffers;
+      vk::CommandBufferUsageFlags                         m_flags;
+      bool                                                m_inRenderPass;
+      bool                                                m_isRecording;
+      bool                                                m_isResetFromCommandPool;
+      vk::CommandBufferLevel                              m_level;
+      vk::Bool32                                          m_occlusionQueryEnable;
+      std::weak_ptr<vkhlf::CommandBuffer>                 m_primaryCommandBuffer;       // this belongs into a SecondayCommandBuffer only
+      QueryInfo                                           m_queryInfo[VK_QUERY_TYPE_RANGE_SIZE];
+      vk::PipelineStageFlags                              m_stageFlags;
 #endif
   };
 

@@ -38,7 +38,7 @@ namespace vkhlf
   class ShaderModule : public Reference<Device, Allocator>, public std::enable_shared_from_this<ShaderModule>
   {
     public:
-      VKHLF_API ShaderModule(std::shared_ptr<Device> const& device, vk::ArrayProxy<const uint32_t> code, std::shared_ptr<Allocator> const& allocator);
+      VKHLF_API ShaderModule(std::shared_ptr<Device> const& device, std::vector<uint32_t> const& code, std::shared_ptr<Allocator> const& allocator);
       VKHLF_API ShaderModule(std::shared_ptr<Device> const& device, std::string const& glslCode, std::shared_ptr<Allocator> const& allocator);
 
       VKHLF_API ~ShaderModule();
@@ -48,8 +48,18 @@ namespace vkhlf
       ShaderModule(ShaderModule const& rhs) = delete;
       ShaderModule & operator=(ShaderModule const& rhs) = delete;
 
+#if !defined(NDEBUG)
+      std::string const& getGLSLCode() const;
+      std::vector<uint32_t> const& getSPIRVCode() const;
+#endif
+
     private:
       vk::ShaderModule m_shaderModule;
+
+#if !defined(NDEBUG)
+      std::string           m_glslCode;
+      std::vector<uint32_t> m_spirvCode;
+#endif
   };
 
   VKHLF_API std::vector<uint32_t> compileGLSLToSPIRV(vk::ShaderStageFlagBits stage, std::string const & source);

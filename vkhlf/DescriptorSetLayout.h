@@ -54,7 +54,7 @@ namespace vkhlf
       VKHLF_API DescriptorSetLayout(std::shared_ptr<Device> const & device, vk::ArrayProxy<const DescriptorSetLayoutBinding> bindings, std::shared_ptr<Allocator> const& allocator);
       VKHLF_API ~DescriptorSetLayout();
 
-      std::vector<DescriptorSetLayoutBinding> const& getBindings() { return m_bindings; }
+      std::vector<DescriptorSetLayoutBinding> const& getBindings() const { return m_bindings; }
 
       VKHLF_API operator vk::DescriptorSetLayout() const;
 

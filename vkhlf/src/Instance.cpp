@@ -78,14 +78,13 @@ namespace vkhlf
         break;
     }
     std::cerr << pMessage << std::endl;
-    assert(!pMessage);
     return VK_TRUE;
   }
 
   std::shared_ptr<vkhlf::Instance> Instance::create(std::string const& appName, uint32_t appVersion, vk::ArrayProxy<const std::string> enabledLayers, vk::ArrayProxy<const std::string> enabledExtensions,
                                                   std::shared_ptr<Allocator> const & allocator)
   {
-    vk::ApplicationInfo applicationInfo(appName.c_str(), appVersion, "DP::VHK", 1, VK_API_VERSION_1_0);
+    vk::ApplicationInfo applicationInfo(appName.c_str(), appVersion, "DP::VHK", 1, VK_MAKE_VERSION(1,1,0));
 
     std::vector<char const*> layers;
     layers.reserve(enabledLayers.size());

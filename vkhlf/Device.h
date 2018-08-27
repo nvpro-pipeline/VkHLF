@@ -152,7 +152,7 @@ namespace vkhlf
       VKHLF_API std::shared_ptr<Semaphore> createSemaphore(std::shared_ptr<Allocator> const& allocator = nullptr);
 
       // create ShaderModule
-      VKHLF_API std::shared_ptr<ShaderModule> createShaderModule(vk::ArrayProxy<const uint32_t> code, std::shared_ptr<Allocator> const& allocator = nullptr);
+      VKHLF_API std::shared_ptr<ShaderModule> createShaderModule(std::vector<uint32_t> const& code, std::shared_ptr<Allocator> const& allocator = nullptr);
       VKHLF_API std::shared_ptr<ShaderModule> createShaderModule(std::string const& glslCode, std::shared_ptr<Allocator> const& allocator = nullptr);
 
       // create Swapchain

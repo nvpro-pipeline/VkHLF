@@ -120,7 +120,7 @@ namespace vkhlf
   class Pipeline : public Reference<Device, Allocator>
   {
     public:
-      VKHLF_API ~Pipeline();
+      VKHLF_API virtual ~Pipeline();
 
       VKHLF_API operator vk::Pipeline() const;
 
@@ -177,22 +177,26 @@ namespace vkhlf
     public:
       VKHLF_API bool changeShaderStage(PipelineShaderStageCreateInfo const& stage);
 
+#if !defined(NDEBUG)
+      VKHLF_API std::vector<PipelineShaderStageCreateInfo> const& getShaderStageCreateInfos() const;
+#endif
+
     private:
       VKHLF_API void createGraphicsPipeline();
 
     private:
-      std::vector<PipelineShaderStageCreateInfo>                m_pipelineShaderStageCreateInfos;
-      std::unique_ptr<PipelineVertexInputStateCreateInfo>       m_pipelineVertexInputStateCreateInfo;
-      std::unique_ptr<vk::PipelineInputAssemblyStateCreateInfo> m_pipelineInputAssemblyStateCreateInfo;
-      std::unique_ptr<vk::PipelineTessellationStateCreateInfo>  m_pipelineTessellationStateCreateInfo;
-      std::unique_ptr<PipelineViewportStateCreateInfo>          m_pipelineViewportStateCreateInfo;
-      std::unique_ptr<vk::PipelineRasterizationStateCreateInfo> m_pipelineRasterizationStateCreateInfo;
-      std::unique_ptr<PipelineMultisampleStateCreateInfo>       m_pipelineMultisampleStateCreateInfo;
-      std::unique_ptr<vk::PipelineDepthStencilStateCreateInfo>  m_pipelineDepthStencilStateCreateInfo;
-      std::unique_ptr<PipelineColorBlendStateCreateInfo>        m_pipelineColorBlendStateCreateInfo;
-      std::unique_ptr<PipelineDynamicStateCreateInfo>           m_pipelineDynamicStateCreateInfo;
+      std::unique_ptr<PipelineColorBlendStateCreateInfo>        m_colorBlendStateCreateInfo;
+      std::unique_ptr<vk::PipelineDepthStencilStateCreateInfo>  m_depthStencilStateCreateInfo;
+      std::unique_ptr<PipelineDynamicStateCreateInfo>           m_dynamicStateCreateInfo;
+      std::unique_ptr<vk::PipelineInputAssemblyStateCreateInfo> m_inputAssemblyStateCreateInfo;
+      std::unique_ptr<PipelineMultisampleStateCreateInfo>       m_multisampleStateCreateInfo;
       std::shared_ptr<RenderPass>                               m_renderPass;
+      std::unique_ptr<vk::PipelineRasterizationStateCreateInfo> m_rasterizationStateCreateInfo;
+      std::vector<PipelineShaderStageCreateInfo>                m_shaderStageCreateInfos;
       uint32_t                                                  m_subpass;
+      std::unique_ptr<vk::PipelineTessellationStateCreateInfo>  m_tessellationStateCreateInfo;
+      std::unique_ptr<PipelineVertexInputStateCreateInfo>       m_vertexInputStateCreateInfo;
+      std::unique_ptr<PipelineViewportStateCreateInfo>          m_viewportStateCreateInfo;
   };
 
 } // namespace vk

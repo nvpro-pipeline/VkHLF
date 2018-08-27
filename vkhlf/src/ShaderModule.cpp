@@ -34,11 +34,14 @@
 namespace vkhlf
 {
 
-  ShaderModule::ShaderModule(std::shared_ptr<Device> const& device, vk::ArrayProxy<const uint32_t> code, std::shared_ptr<Allocator> const& allocator)
+  ShaderModule::ShaderModule(std::shared_ptr<Device> const& device, std::vector<uint32_t> const& code, std::shared_ptr<Allocator> const& allocator)
     : Reference(device, allocator)
   {
     vk::ShaderModuleCreateInfo createInfo(vk::ShaderModuleCreateFlags(), 4 * code.size(), code.data());
     m_shaderModule = static_cast<vk::Device>(*get<Device>()).createShaderModule(createInfo, *get<Allocator>());
+#if !defined(NDEBUG)
+    m_spirvCode = code;
+#endif
   }
 
   ShaderModule::ShaderModule(std::shared_ptr<Device> const& device, std::string const& glslCode, std::shared_ptr<Allocator> const& allocator)
@@ -46,6 +49,9 @@ namespace vkhlf
   {
     vk::ShaderModuleCreateInfo createInfo(vk::ShaderModuleCreateFlags(), glslCode.length(), reinterpret_cast<uint32_t const*>(glslCode.data()));
     m_shaderModule = static_cast<vk::Device>(*get<Device>()).createShaderModule(createInfo, *get<Allocator>());
+#if !defined(NDEBUG)
+    m_glslCode = glslCode;
+#endif
   }
 
   ShaderModule::~ShaderModule()
@@ -224,5 +230,17 @@ namespace vkhlf
     static GLSLToSPIRVCompiler compiler;
     return compiler.compile(stage, source);
   }
+
+#if !defined(NDEBUG)
+  std::string const& ShaderModule::getGLSLCode() const
+  {
+    return m_glslCode;
+  }
+
+  std::vector<uint32_t> const& ShaderModule::getSPIRVCode() const
+  {
+    return m_spirvCode;
+  }
+#endif
 
 } // namespace vkhlf

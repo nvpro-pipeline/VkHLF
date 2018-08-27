@@ -305,7 +305,7 @@ namespace vkhlf
     return std::make_shared<Semaphore>(shared_from_this(), allocator);
   }
 
-  std::shared_ptr<vkhlf::ShaderModule> Device::createShaderModule(vk::ArrayProxy<const uint32_t> code, std::shared_ptr<Allocator> const& allocator)
+  std::shared_ptr<vkhlf::ShaderModule> Device::createShaderModule(std::vector<uint32_t> const& code, std::shared_ptr<Allocator> const& allocator)
   {
     return std::make_shared<ShaderModule>(shared_from_this(), code, allocator);
   }

@@ -261,16 +261,16 @@ namespace vkhlf
                                      std::shared_ptr<PipelineLayout> const& pipelineLayout, std::shared_ptr<RenderPass> const& renderPass, uint32_t subpass,
                                      std::shared_ptr<Pipeline> const& basePipeline, uint32_t basePipelineIndex, std::shared_ptr<Allocator> const& allocator)
     : Pipeline(device, allocator, pipelineCache, pipelineCreateFlags, pipelineLayout, basePipeline, basePipelineIndex)
-    , m_pipelineShaderStageCreateInfos(stages.begin(), stages.end())
-    , m_pipelineVertexInputStateCreateInfo(vertexInputState ? new PipelineVertexInputStateCreateInfo(*vertexInputState) : nullptr)
-    , m_pipelineInputAssemblyStateCreateInfo(inputAssemblyState ? new vk::PipelineInputAssemblyStateCreateInfo(*inputAssemblyState) : nullptr)
-    , m_pipelineTessellationStateCreateInfo(tessellationState ? new vk::PipelineTessellationStateCreateInfo(*tessellationState) : nullptr)
-    , m_pipelineViewportStateCreateInfo(viewportState ? new PipelineViewportStateCreateInfo(*viewportState) : nullptr)
-    , m_pipelineRasterizationStateCreateInfo(rasterizationState ? new vk::PipelineRasterizationStateCreateInfo(*rasterizationState) : nullptr)
-    , m_pipelineMultisampleStateCreateInfo(multisampleState ? new PipelineMultisampleStateCreateInfo(*multisampleState) : nullptr)
-    , m_pipelineDepthStencilStateCreateInfo(depthStencilState ? new vk::PipelineDepthStencilStateCreateInfo(*depthStencilState) : nullptr)
-    , m_pipelineColorBlendStateCreateInfo(colorBlendState ? new PipelineColorBlendStateCreateInfo(*colorBlendState) : nullptr)
-    , m_pipelineDynamicStateCreateInfo(dynamicState ? new PipelineDynamicStateCreateInfo(*dynamicState) : nullptr)
+    , m_shaderStageCreateInfos(stages.begin(), stages.end())
+    , m_vertexInputStateCreateInfo(vertexInputState ? new PipelineVertexInputStateCreateInfo(*vertexInputState) : nullptr)
+    , m_inputAssemblyStateCreateInfo(inputAssemblyState ? new vk::PipelineInputAssemblyStateCreateInfo(*inputAssemblyState) : nullptr)
+    , m_tessellationStateCreateInfo(tessellationState ? new vk::PipelineTessellationStateCreateInfo(*tessellationState) : nullptr)
+    , m_viewportStateCreateInfo(viewportState ? new PipelineViewportStateCreateInfo(*viewportState) : nullptr)
+    , m_rasterizationStateCreateInfo(rasterizationState ? new vk::PipelineRasterizationStateCreateInfo(*rasterizationState) : nullptr)
+    , m_multisampleStateCreateInfo(multisampleState ? new PipelineMultisampleStateCreateInfo(*multisampleState) : nullptr)
+    , m_depthStencilStateCreateInfo(depthStencilState ? new vk::PipelineDepthStencilStateCreateInfo(*depthStencilState) : nullptr)
+    , m_colorBlendStateCreateInfo(colorBlendState ? new PipelineColorBlendStateCreateInfo(*colorBlendState) : nullptr)
+    , m_dynamicStateCreateInfo(dynamicState ? new PipelineDynamicStateCreateInfo(*dynamicState) : nullptr)
     , m_renderPass(renderPass)
     , m_subpass(subpass)
   {
@@ -279,8 +279,8 @@ namespace vkhlf
 
   bool GraphicsPipeline::changeShaderStage(PipelineShaderStageCreateInfo const& stage)
   {
-    auto it = std::find_if(m_pipelineShaderStageCreateInfos.begin(), m_pipelineShaderStageCreateInfos.end(), [stage](auto const& s) { return stage.stage == s.stage; });
-    bool found = (it != m_pipelineShaderStageCreateInfos.end());
+    auto it = std::find_if(m_shaderStageCreateInfos.begin(), m_shaderStageCreateInfos.end(), [stage](auto const& s) { return stage.stage == s.stage; });
+    bool found = (it != m_shaderStageCreateInfos.end());
     if (found)
     {
       *it = stage;
@@ -292,11 +292,11 @@ namespace vkhlf
   void GraphicsPipeline::createGraphicsPipeline()
   {
     std::vector<vk::SpecializationInfo> specializationInfos;
-    specializationInfos.reserve(m_pipelineShaderStageCreateInfos.size());
+    specializationInfos.reserve(m_shaderStageCreateInfos.size());
 
     std::vector<vk::PipelineShaderStageCreateInfo> vkStages;
-    vkStages.reserve(m_pipelineShaderStageCreateInfos.size());
-    for (auto const& s : m_pipelineShaderStageCreateInfos)
+    vkStages.reserve(m_shaderStageCreateInfos.size());
+    for (auto const& s : m_shaderStageCreateInfos)
     {
       if (s.specializationInfo)
       {
@@ -308,54 +308,61 @@ namespace vkhlf
     }
 
     vk::PipelineVertexInputStateCreateInfo vkVertexInputState;
-    if (m_pipelineVertexInputStateCreateInfo)
+    if (m_vertexInputStateCreateInfo)
     {
-      vkVertexInputState = vk::PipelineVertexInputStateCreateInfo({}, vkhlf::checked_cast<uint32_t>(m_pipelineVertexInputStateCreateInfo->vertexBindingDescriptions.size()),
-                                                                  m_pipelineVertexInputStateCreateInfo->vertexBindingDescriptions.data(),
-                                                                  vkhlf::checked_cast<uint32_t>(m_pipelineVertexInputStateCreateInfo->vertexAttributeDesriptions.size()),
-                                                                  m_pipelineVertexInputStateCreateInfo->vertexAttributeDesriptions.data());
+      vkVertexInputState = vk::PipelineVertexInputStateCreateInfo({}, vkhlf::checked_cast<uint32_t>(m_vertexInputStateCreateInfo->vertexBindingDescriptions.size()),
+                                                                  m_vertexInputStateCreateInfo->vertexBindingDescriptions.data(),
+                                                                  vkhlf::checked_cast<uint32_t>(m_vertexInputStateCreateInfo->vertexAttributeDesriptions.size()),
+                                                                  m_vertexInputStateCreateInfo->vertexAttributeDesriptions.data());
     }
 
     vk::PipelineViewportStateCreateInfo vkViewportState;
-    if (m_pipelineViewportStateCreateInfo)
+    if (m_viewportStateCreateInfo)
     {
-      vkViewportState = vk::PipelineViewportStateCreateInfo({}, vkhlf::checked_cast<uint32_t>(m_pipelineViewportStateCreateInfo->viewports.size()),
-                                                            m_pipelineViewportStateCreateInfo->viewports.data(),
-                                                            vkhlf::checked_cast<uint32_t>(m_pipelineViewportStateCreateInfo->scissors.size()),
-                                                            m_pipelineViewportStateCreateInfo->scissors.data());
+      vkViewportState = vk::PipelineViewportStateCreateInfo({}, vkhlf::checked_cast<uint32_t>(m_viewportStateCreateInfo->viewports.size()),
+                                                            m_viewportStateCreateInfo->viewports.data(),
+                                                            vkhlf::checked_cast<uint32_t>(m_viewportStateCreateInfo->scissors.size()),
+                                                            m_viewportStateCreateInfo->scissors.data());
     }
 
     vk::PipelineMultisampleStateCreateInfo vkMultisampleState;
-    if (m_pipelineMultisampleStateCreateInfo)
+    if (m_multisampleStateCreateInfo)
     {
-      vkMultisampleState = vk::PipelineMultisampleStateCreateInfo({}, m_pipelineMultisampleStateCreateInfo->rasterizationSamples, m_pipelineMultisampleStateCreateInfo->sampleShadingEnable,
-                                                                  m_pipelineMultisampleStateCreateInfo->minSampleShading,
-                                                                  m_pipelineMultisampleStateCreateInfo->sampleMasks.empty() ? nullptr : m_pipelineMultisampleStateCreateInfo->sampleMasks.data(),
-                                                                  m_pipelineMultisampleStateCreateInfo->alphaToCoverageEnable, m_pipelineMultisampleStateCreateInfo->alphaToOneEnable);
+      vkMultisampleState = vk::PipelineMultisampleStateCreateInfo({}, m_multisampleStateCreateInfo->rasterizationSamples, m_multisampleStateCreateInfo->sampleShadingEnable,
+                                                                  m_multisampleStateCreateInfo->minSampleShading,
+                                                                  m_multisampleStateCreateInfo->sampleMasks.empty() ? nullptr : m_multisampleStateCreateInfo->sampleMasks.data(),
+                                                                  m_multisampleStateCreateInfo->alphaToCoverageEnable, m_multisampleStateCreateInfo->alphaToOneEnable);
     }
 
     vk::PipelineColorBlendStateCreateInfo vkColorBlendState;
-    if (m_pipelineColorBlendStateCreateInfo)
+    if (m_colorBlendStateCreateInfo)
     {
-      vkColorBlendState = vk::PipelineColorBlendStateCreateInfo({}, m_pipelineColorBlendStateCreateInfo->logicEnable, m_pipelineColorBlendStateCreateInfo->logicOp,
-                                                                vkhlf::checked_cast<uint32_t>(m_pipelineColorBlendStateCreateInfo->attachments.size()),
-                                                                m_pipelineColorBlendStateCreateInfo->attachments.data(), m_pipelineColorBlendStateCreateInfo->blendConstants);
+      vkColorBlendState = vk::PipelineColorBlendStateCreateInfo({}, m_colorBlendStateCreateInfo->logicEnable, m_colorBlendStateCreateInfo->logicOp,
+                                                                vkhlf::checked_cast<uint32_t>(m_colorBlendStateCreateInfo->attachments.size()),
+                                                                m_colorBlendStateCreateInfo->attachments.data(), m_colorBlendStateCreateInfo->blendConstants);
     }
 
     vk::PipelineDynamicStateCreateInfo vkDynamicState;
-    if (m_pipelineDynamicStateCreateInfo)
+    if (m_dynamicStateCreateInfo)
     {
-      vkDynamicState = vk::PipelineDynamicStateCreateInfo({}, vkhlf::checked_cast<uint32_t>(m_pipelineDynamicStateCreateInfo->dynamicStates.size()),
-                                                          m_pipelineDynamicStateCreateInfo->dynamicStates.data());
+      vkDynamicState = vk::PipelineDynamicStateCreateInfo({}, vkhlf::checked_cast<uint32_t>(m_dynamicStateCreateInfo->dynamicStates.size()),
+                                                          m_dynamicStateCreateInfo->dynamicStates.data());
     }
 
     vk::GraphicsPipelineCreateInfo createInfo(getPipelineCreateFlags(), vkhlf::checked_cast<uint32_t>(vkStages.size()), vkStages.data(),
-                                              m_pipelineVertexInputStateCreateInfo ? &vkVertexInputState : nullptr, m_pipelineInputAssemblyStateCreateInfo.get(),
-                                              m_pipelineTessellationStateCreateInfo.get(), m_pipelineViewportStateCreateInfo ? &vkViewportState : nullptr,
-                                              m_pipelineRasterizationStateCreateInfo.get(), m_pipelineMultisampleStateCreateInfo ? &vkMultisampleState : nullptr,
-                                              m_pipelineDepthStencilStateCreateInfo.get(), m_pipelineColorBlendStateCreateInfo ? &vkColorBlendState : nullptr,
-                                              m_pipelineDynamicStateCreateInfo ? &vkDynamicState : nullptr, getPipelineLayout() ? *getPipelineLayout() : vk::PipelineLayout(),
+                                              m_vertexInputStateCreateInfo ? &vkVertexInputState : nullptr, m_inputAssemblyStateCreateInfo.get(),
+                                              m_tessellationStateCreateInfo.get(), m_viewportStateCreateInfo ? &vkViewportState : nullptr,
+                                              m_rasterizationStateCreateInfo.get(), m_multisampleStateCreateInfo ? &vkMultisampleState : nullptr,
+                                              m_depthStencilStateCreateInfo.get(), m_colorBlendStateCreateInfo ? &vkColorBlendState : nullptr,
+                                              m_dynamicStateCreateInfo ? &vkDynamicState : nullptr, getPipelineLayout() ? *getPipelineLayout() : vk::PipelineLayout(),
                                               m_renderPass ? *m_renderPass : vk::RenderPass(), m_subpass, getBasePipeline() ? *getBasePipeline() : vk::Pipeline(), getBasePipelineIndex());
     setPipeline(static_cast<vk::Device>(*get<Device>()).createGraphicsPipeline(getPipelineCache() ? *getPipelineCache() : vk::PipelineCache(), createInfo, *get<Allocator>()));
   }
+
+#if !defined(NDEBUG)
+  std::vector<PipelineShaderStageCreateInfo> const& GraphicsPipeline::getShaderStageCreateInfos() const
+  {
+    return m_shaderStageCreateInfos;
+  }
+#endif
 } // namespace vk

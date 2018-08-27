@@ -43,11 +43,11 @@ namespace vkhlf
                     std::shared_ptr<Allocator> const& bufferAllocator);
       VKHLF_API virtual ~Buffer();
 
-      VKHLF_API std::shared_ptr<vkhlf::BufferView>     createBufferView(vk::Format format, vk::DeviceSize offset = 0, vk::DeviceSize range = ~0, std::shared_ptr<Allocator> const& allocator = nullptr);
-      VKHLF_API vk::DeviceSize                       getSize() const;
-      VKHLF_API vk::MemoryPropertyFlags              getMemoryPropertyFlags() const;
-      VKHLF_API vk::MemoryRequirements               getMemoryRequirements() const;
-      template <typename T> void                  update(vk::DeviceSize offset, vk::ArrayProxy<const T> data, std::shared_ptr<CommandBuffer> const& commandBuffer);
+      VKHLF_API std::shared_ptr<vkhlf::BufferView>  createBufferView(vk::Format format, vk::DeviceSize offset = 0, vk::DeviceSize range = ~0, std::shared_ptr<Allocator> const& allocator = nullptr);
+      VKHLF_API vk::DeviceSize                      getSize() const;
+      VKHLF_API vk::MemoryPropertyFlags             getMemoryPropertyFlags() const;
+      VKHLF_API vk::MemoryRequirements              getMemoryRequirements() const;
+      template <typename T> void                    update(vk::DeviceSize offset, vk::ArrayProxy<const T> data, std::shared_ptr<CommandBuffer> const& commandBuffer);
 
       VKHLF_API operator vk::Buffer() const;
 
@@ -58,6 +58,9 @@ namespace vkhlf
       vk::Buffer              m_buffer;
       vk::MemoryPropertyFlags m_memoryPropertyFlags;
       vk::DeviceSize          m_size;
+#if !defined(NDEBUG)
+      std::vector<char>       m_data;
+#endif
   };
 
   inline vk::DeviceSize Buffer::getSize() const
@@ -98,6 +101,11 @@ namespace vkhlf
       mappingBuffer->get<DeviceMemory>()->unmap();
       commandBuffer->copyBuffer(mappingBuffer, shared_from_this(), vk::BufferCopy(0, 0, size));
     }
+
+#if !defined(NDEBUG)
+    m_data.resize(size);
+    memcpy(m_data.data(), data.data(), size);
+#endif
   }
 
 

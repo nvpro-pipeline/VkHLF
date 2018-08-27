@@ -45,11 +45,11 @@
 
 #include <VkHLFSampleWindow.h>
 
-VkHLFSampleWindow::VkHLFSampleWindow(char const * title, int width, int height)
+VkHLFSampleWindow::VkHLFSampleWindow(char const * title, int width, int height, std::vector<std::string> const& deviceExtensionsEnable)
   : m_window(nullptr, glfwDestroyWindow)
 {
   glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-  m_window.reset(glfwCreateWindow(width, height, "VkHLF - 01_window", NULL, NULL));
+  m_window.reset(glfwCreateWindow(width, height, title, NULL, NULL));
   if (!m_window)
   {
     throw std::runtime_error("failed to create window");
@@ -68,24 +68,24 @@ VkHLFSampleWindow::VkHLFSampleWindow(char const * title, int width, int height)
 #endif
 
   // Create a new vulkan instance using the required extensions
-  std::shared_ptr<vkhlf::Instance> instance = vkhlf::Instance::create(title, 1, enabledLayers, enabledExtensions);
+  m_instance = vkhlf::Instance::create(title, 1, enabledLayers, enabledExtensions);
 
 #if !defined(NDEBUG)
   // The validation layers send a lot of information to the debug report callback. Register one
   vk::DebugReportFlagsEXT flags(vk::DebugReportFlagBitsEXT::eWarning | vk::DebugReportFlagBitsEXT::ePerformanceWarning | vk::DebugReportFlagBitsEXT::eError | vk::DebugReportFlagBitsEXT::eDebug);
-  m_debugReportCallback = instance->createDebugReportCallback(flags, &vkhlf::debugReportCallback);
+  m_debugReportCallback = m_instance->createDebugReportCallback(flags, &vkhlf::debugReportCallback);
 #endif
 
   // Find a physical device with presentation support
-  assert(instance->getPhysicalDeviceCount() != 0);
-  for (size_t index = 0; index < instance->getPhysicalDeviceCount(); ++index)
+  assert(m_instance->getPhysicalDeviceCount() != 0);
+  for (size_t index = 0; index < m_instance->getPhysicalDeviceCount(); ++index)
   {
     // need to get the QueueFamilyProperties before asking for presentation support !
-    std::shared_ptr<vkhlf::PhysicalDevice> physicalDevice = instance->getPhysicalDevice(index);
+    std::shared_ptr<vkhlf::PhysicalDevice> physicalDevice = m_instance->getPhysicalDevice(index);
     std::vector<vk::QueueFamilyProperties> properties = physicalDevice->getQueueFamilyProperties();
     assert(!properties.empty());
 
-    if (glfwGetPhysicalDevicePresentationSupport(static_cast<vk::Instance>(*instance), static_cast<vk::PhysicalDevice>(*physicalDevice), 0))
+    if (glfwGetPhysicalDevicePresentationSupport(static_cast<vk::Instance>(*m_instance), static_cast<vk::PhysicalDevice>(*physicalDevice), 0))
     {
       m_physicalDevice = physicalDevice;
       break;
@@ -96,7 +96,7 @@ VkHLFSampleWindow::VkHLFSampleWindow(char const * title, int width, int height)
     throw std::runtime_error("Failed to find a device with presentation support");
   }
 
-  m_surface = instance->createSurface(m_window.get());
+  m_surface = m_instance->createSurface(m_window.get());
 
   // Search for a graphics queue and a present queue in the array of queue families, try to find one that supports both
   std::vector<uint32_t> queueFamilyIndices = vkhlf::getGraphicsPresentQueueFamilyIndices(m_physicalDevice, m_surface);
@@ -115,9 +115,16 @@ VkHLFSampleWindow::VkHLFSampleWindow(char const * title, int width, int height)
   assert(std::find_if(deviceExtensions.begin(), deviceExtensions.end(), [](auto const& e) { return strcmp(e.extensionName, VK_KHR_SWAPCHAIN_EXTENSION_NAME ) == 0; }) != deviceExtensions.end());
   enabledExtensions.clear();;
   enabledExtensions.push_back(VK_KHR_SWAPCHAIN_EXTENSION_NAME);
-  if (std::find_if(deviceExtensions.begin(), deviceExtensions.end(), [](auto const& e) { return strcmp(e.extensionName, VK_NV_GLSL_SHADER_EXTENSION_NAME ) == 0; }) != deviceExtensions.end())
+  if (std::find_if(deviceExtensions.begin(), deviceExtensions.end(), [](auto const& e) { return strcmp(e.extensionName, VK_NV_GLSL_SHADER_EXTENSION_NAME) == 0; }) != deviceExtensions.end())
   {
     enabledExtensions.push_back(VK_NV_GLSL_SHADER_EXTENSION_NAME);
+  }
+  for (auto const& dee : deviceExtensionsEnable)
+  {
+    if (std::find_if(deviceExtensions.begin(), deviceExtensions.end(), [dee](auto const& e) { return strcmp(e.extensionName, dee.c_str()) == 0; }) != deviceExtensions.end())
+    {
+      enabledExtensions.push_back(dee);
+    }
   }
 
   m_device = m_physicalDevice->createDevice(vkhlf::DeviceQueueCreateInfo(m_queueFamilyIndex, 0.0f), nullptr, enabledExtensions, m_physicalDevice->getFeatures());

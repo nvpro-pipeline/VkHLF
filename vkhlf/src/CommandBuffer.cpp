@@ -237,17 +237,26 @@ namespace vkhlf
   {
     m_resourceTracker->track(buffer);
     m_commandBuffer.bindIndexBuffer(*buffer, offset, indexType);
+#if !defined(NDEBUG)
+    m_boundIndexBuffer = buffer;
+#endif
   }
 
   void CommandBuffer::bindPipeline(vk::PipelineBindPoint bindingPoint, std::shared_ptr<vkhlf::Pipeline> const& pipeline)
   {
     m_commandBuffer.bindPipeline(bindingPoint, *pipeline);
+#if !defined(NDEBUG)
+    m_boundPipeline = pipeline;
+#endif
   }
 
   void CommandBuffer::bindVertexBuffer(uint32_t startBinding, std::shared_ptr<vkhlf::Buffer> const& buffer, vk::DeviceSize offset)
   {
     m_resourceTracker->track(buffer);
     m_commandBuffer.bindVertexBuffers(startBinding, static_cast<vk::Buffer>(*buffer), offset);
+#if !defined(NDEBUG)
+    m_boundVertexBuffers[startBinding] = buffer;
+#endif
   }
 
   void CommandBuffer::bindVertexBuffers(uint32_t startBinding, vk::ArrayProxy<const std::shared_ptr<vkhlf::Buffer>> buffers, vk::ArrayProxy<const vk::DeviceSize> offsets)
@@ -255,10 +264,16 @@ namespace vkhlf
     assert(buffers.size() == offsets.size());
 
     m_bindVertexBuffers.clear();
+#if !defined(NDEBUG)
+    uint32_t i = 0;
+#endif
     for(auto & buffer : buffers)
     {
       m_resourceTracker->track(buffer);
       m_bindVertexBuffers.push_back(*buffer);
+#if !defined(NDEBUG)
+      m_boundVertexBuffers[startBinding + i++] = buffer;
+#endif
     }
 
     m_commandBuffer.bindVertexBuffers(startBinding, m_bindVertexBuffers, offsets);
@@ -628,6 +643,16 @@ namespace vkhlf
   void CommandBuffer::setPrimaryCommandBuffer(std::shared_ptr<vkhlf::CommandBuffer> const& primaryCommandBuffer)
   {
     m_primaryCommandBuffer = primaryCommandBuffer;
+  }
+
+  std::shared_ptr<vkhlf::Pipeline> const& CommandBuffer::getBoundPipeline() const
+  {
+    return m_boundPipeline;
+  }
+
+  std::map<uint32_t, std::shared_ptr<vkhlf::Buffer>> const& CommandBuffer::getBoundVertexBuffers() const
+  {
+    return m_boundVertexBuffers;
   }
 
   std::shared_ptr<vkhlf::CommandBuffer> CommandBuffer::getPrimaryCommandBuffer() const

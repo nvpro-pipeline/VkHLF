@@ -40,7 +40,7 @@
 class VkHLFSampleWindow
 {
 public:
-  VkHLFSampleWindow(char const * title, int width, int height);
+  VkHLFSampleWindow(char const * title, int width, int height, std::vector<std::string> const& deviceExtensionsEnable = std::vector<std::string>());
   virtual ~VkHLFSampleWindow();
 
   void paint();
@@ -62,6 +62,7 @@ protected:
   std::shared_ptr<vkhlf::Device>               const &getDevice()                  const { return m_device; }
   std::unique_ptr<vkhlf::FramebufferSwapchain> const &getFramebufferSwapchain()    const { return m_framebufferSwapchain; }
   std::shared_ptr<vkhlf::Queue>                const &getGraphicsQueue()           const { return m_graphicsQueue; }
+  std::shared_ptr<vkhlf::Instance>             const &getInstance()                const { return m_instance; }
   std::shared_ptr<vkhlf::RenderPass>           const &getRenderPass()              const { return m_renderPass; }
   std::shared_ptr<vkhlf::Surface>              const &getSurface()                 const { return m_surface; }
   vk::Format                                          getColorFormat()             const { return m_colorFormat; }
@@ -86,6 +87,7 @@ private:
   std::shared_ptr<vkhlf::Device>               m_device;
   std::unique_ptr<vkhlf::FramebufferSwapchain> m_framebufferSwapchain;
   std::shared_ptr<vkhlf::Queue>                m_graphicsQueue;
+  std::shared_ptr<vkhlf::Instance>             m_instance;
   std::shared_ptr<vkhlf::RenderPass>           m_renderPass;
   std::shared_ptr<vkhlf::Surface>              m_surface;
   vk::Format                                   m_colorFormat;

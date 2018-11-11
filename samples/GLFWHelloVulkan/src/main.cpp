@@ -249,7 +249,7 @@ Window::Window(char const* title, int width, int height)
   m_descriptorSet = getDevice()->allocateDescriptorSet(descriptorPool, descriptorSetLayout);
   std::vector<vkhlf::WriteDescriptorSet> wdss;
   wdss.push_back(vkhlf::WriteDescriptorSet(m_descriptorSet, 0, 0, 1, vk::DescriptorType::eUniformBuffer, nullptr, vkhlf::DescriptorBufferInfo(m_uniformBufferMVP, 0, sizeof(glm::mat4))));
-  wdss.push_back(vkhlf::WriteDescriptorSet(m_descriptorSet, 1, 0, 1, vk::DescriptorType::eCombinedImageSampler, vkhlf::DescriptorImageInfo(m_textureSampler, m_textureImageView, vk::ImageLayout::eGeneral), nullptr));
+  wdss.push_back(vkhlf::WriteDescriptorSet(m_descriptorSet, 1, 0, 1, vk::DescriptorType::eCombinedImageSampler, vkhlf::DescriptorImageInfo(m_textureSampler, m_textureImageView, vk::ImageLayout::eShaderReadOnlyOptimal), nullptr));
   getDevice()->updateDescriptorSets(wdss, nullptr);
 
   // init vertex buffer

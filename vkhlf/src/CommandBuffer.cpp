@@ -484,6 +484,7 @@ namespace vkhlf
     m_framebuffer.reset();
     m_secondaryCommandBuffers.clear();
 #if !defined(NDEBUG)
+    m_primaryCommandBuffer.reset();
     m_stageFlags = vk::PipelineStageFlags();
 #endif
   }

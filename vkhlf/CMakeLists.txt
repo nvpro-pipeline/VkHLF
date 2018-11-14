@@ -133,22 +133,37 @@ add_library( VkHLF SHARED
   ${PRIVATE}
 )
 
+If (${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION} GREATER 3.7.2 OR
+    ${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION} EQUAL 3.7.2)
+  Find_Package(Vulkan)
+
+  Set(VulkanIncludeDir ${Vulkan_INCLUDE_DIRS})
+  Set(VulkanLib Vulkan::Vulkan)
+Else()
+  Set(VulkanIncludeDir "$ENV{VK_SDK_PATH}/include")
+  Set(VulkanLib "$ENV{VK_SDK_PATH}/Lib/vulkan-1.lib")
+EndIf()
+
 target_include_directories(VkHLF
   PUBLIC    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/private>
-  PUBLIC    "$ENV{VK_SDK_PATH}/include"
+  PUBLIC    "${VulkanIncludeDir}"
   PUBLIC    "${CMAKE_SOURCE_DIR}/3rdparty"
   INTERFACE $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/private>
-  INTERFACE "$ENV{VK_SDK_PATH}/include"
+  INTERFACE "${VulkanIncludeDir}"
   INTERFACE  "${PROJECT_SOURCE_DIR}"
 )
 
-
-target_link_libraries( VkHLF
+target_link_libraries(VkHLF
   ${OPENGL_gl_LIBRARY}
-  "$ENV{VK_SDK_PATH}/Lib/vulkan-1.lib"
+  ${VulkanLib}
   glslang
   OGLCompiler
   OSDependent
-  HLSL
   SPIRV
 )
+
+option(ENABLE_HLSL "Enables HLSL input support" OFF)
+
+if (ENABLE_HLSL)
+  target_link_libraries(VkHLF HLSL)
+endif()

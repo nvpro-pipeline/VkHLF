@@ -32,7 +32,7 @@ PROJECT( VkHLF )
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/CMake")
 
 #GLFW3 doesn't add the Vulkan include directories by default. Add them before.
-include_directories($ENV{VK_SDK_PATH}/include)
+include_directories($ENV{VULKAN_SDK}/include)
 
 option( BUILD_VKCPP_GLFW "Build GLFW" ON)
 

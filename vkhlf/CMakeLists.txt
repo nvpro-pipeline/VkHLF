@@ -140,8 +140,8 @@ If (${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION} GREATER 3.7.2 OR
   Set(VulkanIncludeDir ${Vulkan_INCLUDE_DIRS})
   Set(VulkanLib Vulkan::Vulkan)
 Else()
-  Set(VulkanIncludeDir "$ENV{VK_SDK_PATH}/include")
-  Set(VulkanLib "$ENV{VK_SDK_PATH}/Lib/vulkan-1.lib")
+  Set(VulkanIncludeDir "$ENV{VULKAN_SDK}/include")
+  Set(VulkanLib "$ENV{VULKAN_SDK}/Lib/vulkan-1.lib")
 EndIf()
 
 target_include_directories(VkHLF

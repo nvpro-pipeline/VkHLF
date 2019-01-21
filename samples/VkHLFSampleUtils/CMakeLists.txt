@@ -43,7 +43,7 @@ if (GLFW_FOUND)
 
   include_directories( "."
                        "inc"
-                       "$ENV{VK_SDK_PATH}/Samples/API-Samples/utils"
+                       "$ENV{VULKAN_SDK}/Samples/API-Samples/utils"
                        ${GLFW_INCLUDE_DIRS}
                      )
 
